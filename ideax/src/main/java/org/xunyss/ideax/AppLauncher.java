@@ -1,6 +1,7 @@
 package org.xunyss.ideax;
 
 import java.io.File;
+import java.io.FileFilter;
 import java.io.IOException;
 
 import org.xunyss.ideax.log.Log;
@@ -55,15 +56,32 @@ public class AppLauncher {
 	private static String findApp(String programfiles) {
 		File companyDir = new File(programfiles + File.separator + DIR_COMPANY);
 		if (companyDir.isDirectory()) {
-			File[] productDirs = companyDir.listFiles(pathname -> {
-				String productDir = pathname.getAbsolutePath();
-				String shortname;
-				
-				int idx = productDir.lastIndexOf(File.separator);
-				shortname = productDir.substring(idx + 1);
-				
-				return pathname.isDirectory()
-						&& shortname.startsWith(DIR_PRODUCT);
+			
+			// code: java 1.8 SPEC
+//			File[] productDirs = companyDir.listFiles(pathname -> {
+//				String productDir = pathname.getAbsolutePath();
+//				String shortname;
+//				
+//				int idx = productDir.lastIndexOf(File.separator);
+//				shortname = productDir.substring(idx + 1);
+//				
+//				return pathname.isDirectory()
+//						&& shortname.startsWith(DIR_PRODUCT);
+//			});
+			
+			// code: under java 1.8 SPEC
+			File[] productDirs = companyDir.listFiles(new FileFilter() {
+				@Override
+				public boolean accept(File pathname) {
+					String productDir = pathname.getAbsolutePath();
+					String shortname;
+					
+					int idx = productDir.lastIndexOf(File.separator);
+					shortname = productDir.substring(idx + 1);
+					
+					return pathname.isDirectory()
+							&& shortname.startsWith(DIR_PRODUCT);
+				}
 			});
 			
 			if (productDirs.length > 0) {
