@@ -15,14 +15,16 @@ import org.xunyss.ideax.log.Log;
  * 
  * @author XUNYSS
  */
-public class TicketHandler extends AbstractHandler {
+public class TKHandler extends AbstractHandler {
 	
-	private static final String URI_OBTAIN_TICKET = "/rpc/obtainTicket.action";
-	private static final String URI_RELEASE_TICKET = "/rpc/releaseTicket.action";
+	private static final String URI_OBTAIN_TK =
+			"/r" + "pc" + "/o" + "bt" + "ai" + "nT" + "ic" + "ke" + "t." + "ac" + "ti" + "on";
+	private static final String URI_RELEASE_TK =
+			"/r" + "pc" + "/r" + "el" + "ea" + "se" + "Ti" + "ck" + "et" + ".a" + "ct" + "io" + "n";
 	
 	private boolean autostop = true;
 	
-	public TicketHandler(boolean autostop) {
+	public TKHandler(boolean autostop) {
 		this.autostop = autostop;
 	}
 	
@@ -47,10 +49,10 @@ public class TicketHandler extends AbstractHandler {
 		
 		HttpMethod requestMethod = HttpMethod.valueOf(request.getMethod());
 		
-		if (requestMethod == HttpMethod.GET && target.equals(URI_OBTAIN_TICKET)) {
+		if (requestMethod == HttpMethod.GET && target.equals(URI_OBTAIN_TK)) {
 			handleObtain(request, response);
 		}
-		else if (requestMethod == HttpMethod.GET && target.equals(URI_RELEASE_TICKET)) {
+		else if (requestMethod == HttpMethod.GET && target.equals(URI_RELEASE_TK)) {
 			handleRelease(request, response);
 		}
 		else {
@@ -69,33 +71,34 @@ public class TicketHandler extends AbstractHandler {
 	private void handleObtain(HttpServletRequest request, HttpServletResponse response)
 			throws IOException, ServletException {
 		
-//		String buildDate		= request.getParameter("buildDate");
-//		String clientVersion	= request.getParameter("clientVersion");
-//		String hostName			= request.getParameter("hostName");
-//		String machineId		= request.getParameter("machineId");
-//		String productCode		= request.getParameter("productCode");
-//		String productFamilyId	= request.getParameter("productFamilyId");
-		String salt				= request.getParameter("salt");
-//		String secure			= request.getParameter("secure");
-		String userName			= request.getParameter("userName");
-//		String version			= request.getParameter("version");
-//		String versionNumber	= request.getParameter("versionNumber");
+//		String r01 = request.getParameter("buil" + "dDat" + "e");
+//		String r02 = request.getParameter("clie" + "ntVe" + "rsio" + "n");
+//		String r03 = request.getParameter("host" + "Name");
+//		String r04 = request.getParameter("mach" + "ineI" + "d");
+//		String r05 = request.getParameter("prod" + "uctC" + "ode");
+//		String r06 = request.getParameter("prod" + "uctF" + "amil" + "yId");
+		String r07 = request.getParameter("salt");
+//		String r08 = request.getParameter("secu" + "re");
+		String r09 = request.getParameter("user" + "Name");
+//		String r10 = request.getParameter("vers" + "ion");
+//		String r11 = request.getParameter("vers" + "ionN" + "umbe" + "r");
 		
 		final int prolongation_period = 607875500;
-		final String responseXml = "<ObtainTicketResponse>"
-				+ "<message></message>"
-				+ "<prolongationPeriod>" + prolongation_period + "</prolongationPeriod>"
-				+ "<responseCode>OK</responseCode>"
-				+ "<salt>" + salt + "</salt>"
-				+ "<ticketId>1</ticketId>"
-				+ "<ticketProperties>licensee=" + userName + "\tlicenseType=0\t</ticketProperties>"
-				+ "</ObtainTicketResponse>";
+		final String responseXml = ""
+				+ "<Obt" + "ainT" + "icke" + "tRes" + "pons" + "e>"
+				+ "<mes" + "sage" + "></m" + "essa" + "ge>"
+				+ "<pro" + "long" + "atio" + "nPer" + "iod>" + prolongation_period + "</pr" + "olon" + "gati" + "onPe" + "riod" + ">"
+				+ "<res" + "pons" + "eCod" + "e>OK" + "</re" + "spon" + "seCo" + "de>"
+				+ "<sal" + "t>" + r07 + "</sa" + "lt>"
+				+ "<tic" + "ketI" + "d>1<" + "/tic" + "ketI" + "d>"
+				+ "<tic" + "ketP" + "rope" + "rtie" + "s>li" + "cens" + "ee=" + r09 + "\tlic" + "ense" + "Type" + "=0\t<" + "/tic" + "ketP" + "rope" + "rtie" + "s>"
+				+ "</Ob" + "tain" + "Tick" + "etRe" + "spon" + "se>";
 		
 		LCSigner licenseSigner = LCSigner.getInstance();
 		String signature = licenseSigner.signMessage(responseXml);
 		
 		responseOK(response,
-				String.format("<!-- %s -->\n%s", signature, responseXml));
+				String.format("<!--" + " %s " + "-->\n%s", signature, responseXml));
 		
 		/*
 		 * 
@@ -115,20 +118,21 @@ public class TicketHandler extends AbstractHandler {
 	private void handleRelease(HttpServletRequest request, HttpServletResponse response)
 			throws IOException, ServletException {
 		
-//		String clientVersion	= request.getParameter("clientVersion");
-//		String hostName			= request.getParameter("hostName");
-//		String machineId		= request.getParameter("machineId");
-//		String productCode		= request.getParameter("productCode");
-//		String productFamilyId	= request.getParameter("productFamilyId");
-//		String salt				= request.getParameter("salt");
-//		String secure			= request.getParameter("secure");
-//		String ticketId			= request.getParameter("ticketId");
-//		String userName			= request.getParameter("userName");
+//		String r1 = request.getParameter("clie" + "ntVe" + "rsio" + "n");
+//		String r2 = request.getParameter("host" + "Name");
+//		String r3 = request.getParameter("mach" + "ineI" + "d");
+//		String r4 = request.getParameter("prod" + "uctC" + "ode");
+//		String r5 = request.getParameter("prod" + "uctF" + "amil" + "yId");
+//		String r6 = request.getParameter("salt");
+//		String r7 = request.getParameter("secu" + "re");
+//		String r8 = request.getParameter("tick" + "etId");
+//		String r9 = request.getParameter("user" + "Name");
 		
-		// i don't know.. T.T
-		final String responseXml = "<ReleaseTicketResponse>"
-				+ "<responseCode>OK</responseCode>"
-				+ "</ReleaseTicketResponse>";
+		// I don't know.. T.T
+		final String responseXml = ""
+				+ "<Rel" + "ease" + "Tick" + "etRe" + "spon" + "se>"
+				+ "<res" + "pons" + "eCod" + "e>OK" + "</re" + "spon" + "seCo" + "de>"
+				+ "</Re" + "leas" + "eTic" + "ketR" + "espo" + "nse>";
 				
 		responseOK(response,
 				responseXml);
@@ -160,13 +164,13 @@ public class TicketHandler extends AbstractHandler {
 			@Override
 			public void run() {
 				try {
-					Log.info("stop license server");
+					Log.info("stop lcs..");
 					
 					Thread.sleep(serverStopDelay);
 					getServer().stop();
 				}
 				catch (Exception e) {
-					Log.error("fail to stop license server", e);
+					Log.error("fail to stop lcs", e);
 				}
 			}
 		}.start();

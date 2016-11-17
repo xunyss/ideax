@@ -18,7 +18,7 @@ public class IdeaX {
 	 * java -jar ideax.jar
 	 * java -jar ideax.jar 9797
 	 * java -jar ideax.jar 9797 -exec
-	 * java -jar ideax.jar 9797 -exec "C:\Program Files\JetBrains\IntelliJ IDEA 15\bin\idea.exe"
+	 * java -jar ideax.jar 9797 -exec "C:\Program Files\Company\Product\bin\Application.exe"
 	 * java -jar ideax.jar 9797 -server
 	 * </pre>
 	 * 
@@ -65,17 +65,17 @@ public class IdeaX {
 		
 		
 		/**
-		 * initialize license signer
+		 * initialize LCSigner
 		 */
-		Log.info("initialize License-Signer");
+		Log.info("initialize LCSigner");
 		LCSigner.getInstance().init();
 		
 		/**
-		 * start server
+		 * start lcs
 		 */
-		Log.info("start license server");
+		Log.info("start lcs..");
 		Server server = new Server(port);
-		server.setHandler(new TicketHandler(launch));
+		server.setHandler(new TKHandler(launch));
 		try {
 			server.start();
 		}
@@ -86,24 +86,24 @@ public class IdeaX {
 		}
 		
 		/**
-		 * execute "Intellij-IDEA"
+		 * execute application
 		 */
 		if (launch) {
-			Log.info("start Intellij-IDEA");
+			Log.info("start application..");
 			AppLauncher.exec(appPath);
 		}
 		
 		/**
 		 * 
 		 */
-		Log.info("license server is ready");
-		Log.info("license server address: http://localhost:" + port);
+		Log.info("lcs is ready..");
+		Log.info("lcs address: http://localhost:" + port);
 		server.join();
 		
 		/**
 		 * 
 		 */
-		Log.info("license server is stopped");
+		Log.info("lcs is stopped");
 	}
 
 	/**

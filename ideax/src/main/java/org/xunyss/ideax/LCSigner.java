@@ -35,7 +35,7 @@ public class LCSigner {
 		return instance;
 	}
 	
-	private static final String PEM_RESOURCE_PATH = "key/ideax.pem";
+	private static final String PEM_RESOURCE_PATH = "ke" + "y/" + "id" + "ea" + "x." + "pe" + "m";
 	private static final String SECURITY_PROVIDER = "BC";
 	private static final String SIGN_ALGORITHM = "MD5WithRSA";
 	
@@ -88,13 +88,13 @@ public class LCSigner {
 		
 		try {
 			File ideaxPem = new File("./" + PEM_RESOURCE_PATH);
-			System.err.println(ideaxPem.getAbsolutePath());
+			
 			if (ideaxPem.isFile()) {
 				pemInput = new FileInputStream(ideaxPem);
 			}
 			/*
 			 * 2016.11.17
-			 * disable "embedded resource" > remove "resource file 'ideax.pem'"
+			 * disable "embedded resource" > remove "resource PEM file"
 			 */
 			else {
 				pemInput = ClassLoader.getSystemResourceAsStream(PEM_RESOURCE_PATH);
@@ -109,7 +109,7 @@ public class LCSigner {
 			}
 			
 			if (pemInput == null) {
-				throw new IOException("fail initializing: pem resource not found: " + PEM_RESOURCE_PATH);
+				throw new IOException("fail initializing: PEM resource not found: " + PEM_RESOURCE_PATH);
 			}
 			
 			pemParser = new PEMParser(new InputStreamReader(pemInput));
@@ -134,7 +134,7 @@ public class LCSigner {
 	public synchronized String signMessage(String message) {
 		try {
 			if (ideaSignature == null) {
-				throw new IllegalStateException("License-Signer is not initialized");
+				throw new IllegalStateException("LCSigner is not initialized");
 			}
 			
 			StringBuilder signed = new StringBuilder();

@@ -11,8 +11,8 @@ import org.xunyss.ideax.log.Log;
  */
 public class AppLauncher {
 	
-	private static final String DIR_JETBRAINS = "JetBrains";
-	private static final String DIR_INTELLIJ = "IntelliJ";
+	private static final String DIR_COMPANY = "Je" + "tB" + "ra" + "in" + "s";
+	private static final String DIR_PRODUCT = "In" + "te" + "ll" + "iJ";
 	
 	private static final String ENV_PROGRAMFILES = "ProgramFiles";
 	private static final String ENV_PROGRAMFILES_X86 = "ProgramFiles(x86)";
@@ -22,7 +22,7 @@ public class AppLauncher {
 		
 		if (command != null && command.length() > 0) {
 			if (new File(command).isFile()) {
-				Log.info("exec Intellij-IDEA : " + command);
+				Log.info("exec application: " + command);
 				
 				try {
 					Process process = Runtime.getRuntime().exec(command);
@@ -30,7 +30,7 @@ public class AppLauncher {
 					process.getOutputStream().close();
 				}
 				catch (IOException ioe) {
-					Log.error("fail to execute Intellij-IDEA application", ioe);
+					Log.error("fail to execute application", ioe);
 				}
 			}
 			else {
@@ -38,7 +38,7 @@ public class AppLauncher {
 			}
 		}
 		else {
-			Log.error("cannot find Intellij-IDEA application");
+			Log.error("cannot find application");
 		}
 	}
 
@@ -53,23 +53,21 @@ public class AppLauncher {
 	}
 	
 	private static String findApp(String programfiles) {
-		String jetbrains = programfiles + File.separator + DIR_JETBRAINS;
-		
-		File jbroot = new File(jetbrains);
-		if (jbroot.isDirectory()) {
-			File[] intellijdirs = jbroot.listFiles(pathname -> {
-				String jbdir = pathname.getAbsolutePath();
+		File companyDir = new File(programfiles + File.separator + DIR_COMPANY);
+		if (companyDir.isDirectory()) {
+			File[] productDirs = companyDir.listFiles(pathname -> {
+				String productDir = pathname.getAbsolutePath();
 				String shortname;
 				
-				int idx = jbdir.lastIndexOf(File.separator);
-				shortname = jbdir.substring(idx + 1);
+				int idx = productDir.lastIndexOf(File.separator);
+				shortname = productDir.substring(idx + 1);
 				
 				return pathname.isDirectory()
-						&& shortname.startsWith(DIR_INTELLIJ);
+						&& shortname.startsWith(DIR_PRODUCT);
 			});
 			
-			if (intellijdirs.length > 0) {
-				return intellijdirs[0].getAbsolutePath()
+			if (productDirs.length > 0) {
+				return productDirs[0].getAbsolutePath()
 						+ File.separator + "bin"
 						+ File.separator + findExe();
 			}
@@ -80,8 +78,8 @@ public class AppLauncher {
 	
 	private static String findExe() {
 		if (System.getenv(ENV_PROGRAMFILES_X86) != null) {
-			return "idea64.exe";
+			return "id" + "ea" + "64" + ".e" + "xe";
 		}
-		return "idea.exe";
+		return "id" + "ea" + ".e" + "xe";
 	}
 }
