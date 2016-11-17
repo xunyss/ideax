@@ -20,6 +20,8 @@ import org.xunyss.commons.util.IOUtils;
 import org.xunyss.openssl.OpenSSL;
 
 /**
+ * java -jar ideax-gk.jar
+ * java -jar ideax-gk.jar http 160.61.190.143 18283
  * 
  * @author XUNYSS
  */
@@ -37,8 +39,8 @@ public class GK {
 			
 			HTTPDownloader downloader = new HTTPDownloader();
 			downloader.setDownloadPath(workdir);
-			if (args.length > 3) {
-				downloader.setProxy(args[1], args[2], Integer.parseInt(args[3]));
+			if (args.length > 2) {
+				downloader.setProxy(args[0], args[1], Integer.parseInt(args[2]));
 			}
 			String downloadURL = Const.downloadURL;
 			String downloadedFile = downloader.download(downloadURL);

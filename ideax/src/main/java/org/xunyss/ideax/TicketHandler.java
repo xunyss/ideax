@@ -91,7 +91,7 @@ public class TicketHandler extends AbstractHandler {
 				+ "<ticketProperties>licensee=" + userName + "\tlicenseType=0\t</ticketProperties>"
 				+ "</ObtainTicketResponse>";
 		
-		LicenseSigner licenseSigner = LicenseSigner.getInstance();
+		LCSigner licenseSigner = LCSigner.getInstance();
 		String signature = licenseSigner.signMessage(responseXml);
 		
 		responseOK(response,

@@ -20,18 +20,18 @@ import org.xunyss.ideax.log.Log;
  * 
  * @author XUNYSS
  */
-public class LicenseSigner {
+public class LCSigner {
 	
 	/**
 	 * 
 	 */
-	private static LicenseSigner instance = new LicenseSigner();
+	private static LCSigner instance = new LCSigner();
 	
 	/**
 	 * 
 	 * @return
 	 */
-	public static LicenseSigner getInstance() {
+	public static LCSigner getInstance() {
 		return instance;
 	}
 	
@@ -39,44 +39,42 @@ public class LicenseSigner {
 	private static final String SECURITY_PROVIDER = "BC";
 	private static final String SIGN_ALGORITHM = "MD5WithRSA";
 	
+	private boolean initialized = false;
 	
 	private Signature ideaSignature = null;
 	
 	/**
 	 * 
 	 */
-	private LicenseSigner() {
-		try {
-			init();
-		}
-		catch (Exception e) {
-			Log.error("fail to License-Signer initializing", e);
-		}
+	private LCSigner() {
+		
 	}
 	
 	/**
 	 * 
 	 * @throws Exception
 	 */
-	private void init() throws Exception {
-		/*
-		 * add BouncyCastleProvider
-		 */
-		Security.addProvider(new org.bouncycastle.jce.provider.BouncyCastleProvider());
-		
-		/*
-		 * get primary key
-		 */
-		PEMKeyPair pemKeyPair = (PEMKeyPair) loadPrivateKeyPem();
-		JcaPEMKeyConverter pemKeyconverter = new JcaPEMKeyConverter().setProvider(SECURITY_PROVIDER);
-		KeyPair keypair = pemKeyconverter.getKeyPair(pemKeyPair);
-		PrivateKey privateKey = keypair.getPrivate();
-		
-		/*
-		 * initialize signer signature
-		 */
-		ideaSignature = Signature.getInstance(SIGN_ALGORITHM, SECURITY_PROVIDER);
-		ideaSignature.initSign(privateKey);
+	void init() throws Exception {
+		if (!initialized) {
+			/*
+			 * add BouncyCastleProvider
+			 */
+			Security.addProvider(new org.bouncycastle.jce.provider.BouncyCastleProvider());
+			
+			/*
+			 * get primary key
+			 */
+			PEMKeyPair pemKeyPair = (PEMKeyPair) loadPrivateKeyPem();
+			JcaPEMKeyConverter pemKeyconverter = new JcaPEMKeyConverter().setProvider(SECURITY_PROVIDER);
+			KeyPair keypair = pemKeyconverter.getKeyPair(pemKeyPair);
+			PrivateKey privateKey = keypair.getPrivate();
+			
+			/*
+			 * initialize signer signature
+			 */
+			ideaSignature = Signature.getInstance(SIGN_ALGORITHM, SECURITY_PROVIDER);
+			ideaSignature.initSign(privateKey);
+		}
 	}
 	
 	/**
@@ -90,9 +88,14 @@ public class LicenseSigner {
 		
 		try {
 			File ideaxPem = new File("./" + PEM_RESOURCE_PATH);
+			System.err.println(ideaxPem.getAbsolutePath());
 			if (ideaxPem.isFile()) {
 				pemInput = new FileInputStream(ideaxPem);
 			}
+			/*
+			 * 2016.11.17
+			 * disable "embedded resource" > remove "resource file 'ideax.pem'"
+			 */
 			else {
 				pemInput = ClassLoader.getSystemResourceAsStream(PEM_RESOURCE_PATH);
 				if (pemInput == null) {
@@ -106,7 +109,7 @@ public class LicenseSigner {
 			}
 			
 			if (pemInput == null) {
-				throw new IOException("pem resource not found : " + PEM_RESOURCE_PATH);
+				throw new IOException("fail initializing: pem resource not found: " + PEM_RESOURCE_PATH);
 			}
 			
 			pemParser = new PEMParser(new InputStreamReader(pemInput));

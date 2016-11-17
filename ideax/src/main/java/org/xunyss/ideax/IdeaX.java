@@ -20,8 +20,6 @@ public class IdeaX {
 	 * java -jar ideax.jar 9797 -exec
 	 * java -jar ideax.jar 9797 -exec "C:\Program Files\JetBrains\IntelliJ IDEA 15\bin\idea.exe"
 	 * java -jar ideax.jar 9797 -server
-	 * java -jar ideax.jar -key
-	 * java -jar ideax.jar -key http 160.61.190.143 18283
 	 * </pre>
 	 * 
 	 * @param args
@@ -70,7 +68,7 @@ public class IdeaX {
 		 * initialize license signer
 		 */
 		Log.info("initialize License-Signer");
-		LicenseSigner.getInstance();
+		LCSigner.getInstance().init();
 		
 		/**
 		 * start server
