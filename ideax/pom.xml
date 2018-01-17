@@ -34,9 +34,9 @@
 	
 	<dependencies>
 		<dependency>
-			<groupId>org.xunyss.commons</groupId>
-			<artifactId>commons</artifactId>
-			<version>0.5.1-RELEASE</version>
+			<groupId>io.xunyss.commons</groupId>
+			<artifactId>commons-base</artifactId>
+			<version>0.5.5-RELEASE</version>
 		</dependency>
 		<dependency>
 			<groupId>org.eclipse.jetty</groupId>

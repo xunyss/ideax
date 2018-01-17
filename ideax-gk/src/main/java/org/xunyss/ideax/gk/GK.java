@@ -15,9 +15,10 @@ import org.bouncycastle.util.io.pem.PemWriter;
 import org.xunyss.commons.net.HTTPDownloader;
 import org.xunyss.commons.reflect.JarClassLoader;
 import org.xunyss.commons.util.ArchiveUtils;
-import org.xunyss.commons.util.FileUtils;
-import org.xunyss.commons.util.IOUtils;
-import org.xunyss.openssl.OpenSSL;
+
+import io.xunyss.commons.io.FileUtils;
+import io.xunyss.commons.io.IOUtils;
+import io.xunyss.openssl.OpenSSL;
 
 /**
  * java -jar ideax-gk.jar
@@ -70,7 +71,7 @@ public class GK {
 			// 5. convert private key
 			ByteArrayOutputStream pemBytes = new ByteArrayOutputStream();
 			OpenSSL openssl = new OpenSSL(pemBytes);
-			openssl.exec("rsa", "-in", generatedkeyFile.getPath(), "-modulus");
+			openssl.execute("rsa", "-in", generatedkeyFile.getPath(), "-modulus");
 			String pemStr = pemBytes.toString();
 			IOUtils.closeQuietly(pemBytes);
 			Log.out("converted private key:\n" + pemStr);

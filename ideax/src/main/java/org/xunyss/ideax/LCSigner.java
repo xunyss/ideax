@@ -13,8 +13,9 @@ import java.security.Signature;
 import org.bouncycastle.openssl.PEMKeyPair;
 import org.bouncycastle.openssl.PEMParser;
 import org.bouncycastle.openssl.jcajce.JcaPEMKeyConverter;
-import org.xunyss.commons.util.IOUtils;
 import org.xunyss.ideax.log.Log;
+
+import io.xunyss.commons.io.IOUtils;
 
 /**
  * 
