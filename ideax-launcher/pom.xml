@@ -5,13 +5,13 @@
 
 	<modelVersion>4.0.0</modelVersion>
 	
-	<groupId>org.xunyss.ideax</groupId>
-	<artifactId>ideax</artifactId>
-	<version>0.0.2-SNAPSHOT</version>
+	<groupId>io.xunyss.ideax</groupId>
+	<artifactId>ideax-launcher</artifactId>
+	<version>0.0.3-SNAPSHOT</version>
 	<packaging>jar</packaging>
 
-	<name>ideax</name>
-	<description>ideax</description>
+	<name>ideax-launcher</name>
+	<description>ideax-launcher</description>
 	
 	<properties>
 		<!-- 9.3 이상부터 jre8 필요 -->

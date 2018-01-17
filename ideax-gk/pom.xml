@@ -5,9 +5,9 @@
 
 	<modelVersion>4.0.0</modelVersion>
 	
-	<groupId>org.xunyss.ideax</groupId>
+	<groupId>io.xunyss.ideax</groupId>
 	<artifactId>ideax-gk</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
+	<version>0.0.2-SNAPSHOT</version>
 	<packaging>jar</packaging>
 
 	<name>ideax-gk</name>
@@ -15,7 +15,6 @@
 	
 	<properties>
 		<sec.bc.version>1.54</sec.bc.version>
-		
 		<mainClass>org.xunyss.ideax.IdeaX</mainClass>
 	</properties>
 	
