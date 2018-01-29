@@ -21,9 +21,14 @@ import io.xunyss.commons.io.IOUtils;
 import io.xunyss.openssl.OpenSSL;
 
 /**
- * java -jar ideax-gk.jar
- * java -jar ideax-gk.jar http 160.61.190.143 18283
- * 
+ * GK.
+ *
+ * <p>usages
+ * <ul>
+ *   <li>java -jar ideax-gk.jar</li>
+ *   <li>java -jar ideax-gk.jar http 160.61.190.143 18283</li>
+ * </ul>
+ *
  * @author XUNYSS
  */
 public class GK {
@@ -31,7 +36,7 @@ public class GK {
 	public static void main(String[] args) throws Exception {
 		
 		// 0. set working directory
-		File workdir = new File("./temp_work");
+		File workingDir = new File("./temp_work");
 		
 		try {
 			// 1. download "lcs-installer.zip"
@@ -39,7 +44,7 @@ public class GK {
 			Log.out();
 			
 			HTTPDownloader downloader = new HTTPDownloader();
-			downloader.setDownloadPath(workdir);
+			downloader.setDownloadPath(workingDir);
 			if (args.length > 2) {
 				downloader.setProxy(args[0], args[1], Integer.parseInt(args[2]));
 			}
@@ -48,10 +53,10 @@ public class GK {
 			
 			// 2. unzip "lcs-installer.zip"
 			Log.out("extract 'lcs-installer.zip'");
-			ArchiveUtils.unzip(downloadedFile, workdir);
+			ArchiveUtils.unzip(downloadedFile, workingDir);
 
 			// 3. get MODULUS, PRIVATE_EXPONENT
-			Class<?> clazz = JarClassLoader.loadClass(new File(workdir, Const.svJar), Const.fpkkCls);
+			Class<?> clazz = JarClassLoader.loadClass(new File(workingDir, Const.svJar), Const.fpkkCls);
 			Field fieldModulus = clazz.getDeclaredField("MODULUS");
 			Field fielPprivateExponent = clazz.getDeclaredField("PRIVATE_EXPONENT");
 			fieldModulus.setAccessible(true);
@@ -64,7 +69,7 @@ public class GK {
 			
 			// 4. generate private key
 			String generatedKey = generatePrivateKey(modules, privateExponent);
-			File generatedkeyFile = new File(workdir, "ideax.temp.pem");
+			File generatedkeyFile = new File(workingDir, "ideax.temp.pem");
 			IOUtils.copy(generatedKey, generatedkeyFile);
 			Log.out("generated private key:\n" + generatedKey);
 
@@ -87,7 +92,7 @@ public class GK {
 		}
 		finally {
 			// 7. remove temp working directory
-			FileUtils.deleteDirectory(workdir);
+			FileUtils.deleteDirectory(workingDir);
 		}
 	}
 	
@@ -110,7 +115,7 @@ public class GK {
 	}
 	
 	
-	//--------------------------------------------------------------------------
+	//----------------------------------------------------------------------------------------------
 	
 	static class Const {
 		
