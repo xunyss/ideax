@@ -1,6 +1,5 @@
 package org.xunyss.ideax.gk;
 
-import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.StringWriter;
 import java.lang.reflect.Field;
@@ -12,12 +11,13 @@ import java.security.spec.RSAPrivateKeySpec;
 
 import org.bouncycastle.util.io.pem.PemObject;
 import org.bouncycastle.util.io.pem.PemWriter;
-import org.xunyss.commons.net.HTTPDownloader;
-import org.xunyss.commons.reflect.JarClassLoader;
-import org.xunyss.commons.util.ArchiveUtils;
 
 import io.xunyss.commons.io.FileUtils;
 import io.xunyss.commons.io.IOUtils;
+import io.xunyss.commons.lang.ArrayUtils;
+import io.xunyss.commons.lang.ZipUtils;
+import io.xunyss.commons.net.HTTPDownloader;
+import io.xunyss.commons.reflect.JarClassLoader;
 import io.xunyss.openssl.OpenSSL;
 
 /**
@@ -34,6 +34,13 @@ import io.xunyss.openssl.OpenSSL;
 public class GK {
 	
 	public static void main(String[] args) throws Exception {
+		
+		File curr = new File(".");
+		System.out.println(curr.getAbsolutePath());
+		
+		if (ArrayUtils.isArray(args)) {
+			return;
+		}
 		
 		// 0. set working directory
 		File workingDir = new File("./temp_work");
@@ -53,7 +60,7 @@ public class GK {
 			
 			// 2. unzip "lcs-installer.zip"
 			Log.out("extract 'lcs-installer.zip'");
-			ArchiveUtils.unzip(downloadedFile, workingDir);
+			ZipUtils.unzip(downloadedFile, workingDir);
 
 			// 3. get MODULUS, PRIVATE_EXPONENT
 			Class<?> clazz = JarClassLoader.loadClass(new File(workingDir, Const.svJar), Const.fpkkCls);
@@ -74,11 +81,10 @@ public class GK {
 			Log.out("generated private key:\n" + generatedKey);
 
 			// 5. convert private key
-			ByteArrayOutputStream pemBytes = new ByteArrayOutputStream();
-			OpenSSL openssl = new OpenSSL(pemBytes);
-			openssl.execute("rsa", "-in", generatedkeyFile.getPath(), "-modulus");
-			String pemStr = pemBytes.toString();
-			IOUtils.closeQuietly(pemBytes);
+			OpenSSL openssl = new OpenSSL();
+			openssl.exec("rsa", "-in", generatedkeyFile.getPath(), "-modulus");
+			String pemStr = openssl.getOutput();
+			
 			Log.out("converted private key:\n" + pemStr);
 			
 			// 6. create "ideax.pem"
@@ -127,5 +133,12 @@ public class GK {
 		
 		static byte[] _fpkkCls = {0x63, 0x6f, 0x6d, 0x2e, 0x6a, 0x65, 0x74, 0x62, 0x72, 0x61, 0x69, 0x6e, 0x73, 0x2e, 0x6c, 0x73, 0x2e, 0x66, 0x6c, 0x6f, 0x61, 0x74, 0x69, 0x6e, 0x67, 0x2e, 0x46, 0x6c, 0x6f, 0x61, 0x74, 0x69, 0x6e, 0x67, 0x50, 0x72, 0x69, 0x76, 0x61, 0x74, 0x65, 0x4b, 0x65, 0x79, 0x73, 0x4b, 0x74};
 		static String fpkkCls = new String(_fpkkCls);
+		
+		
+		public static void main(String[] args) {
+			System.out.println(downloadURL);
+			System.out.println(svJar);
+			System.out.println(fpkkCls);
+		}
 	}
 }

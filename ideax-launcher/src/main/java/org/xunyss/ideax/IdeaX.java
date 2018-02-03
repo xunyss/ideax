@@ -11,6 +11,11 @@ import org.xunyss.ideax.log.Log;
  */
 public class IdeaX {
 	
+	/*
+	 * http://jetbrains.license.laucyun.com
+	 * http:///50.112.79.106:81
+	 */
+	
 	private static final int DEFAULT_PORT = 9797;
 	
 	/**
