@@ -1,4 +1,4 @@
-package org.xunyss.ideax.gk;
+package io.xunyss.ideax.gk;
 
 import java.io.File;
 import java.io.StringWriter;
@@ -12,13 +12,11 @@ import java.security.spec.RSAPrivateKeySpec;
 import org.bouncycastle.util.io.pem.PemObject;
 import org.bouncycastle.util.io.pem.PemWriter;
 
-import io.xunyss.commons.io.FileUtils;
 import io.xunyss.commons.io.IOUtils;
-import io.xunyss.commons.lang.ArrayUtils;
 import io.xunyss.commons.lang.ZipUtils;
-import io.xunyss.commons.net.HTTPDownloader;
+import io.xunyss.commons.net.HttpDownloader;
+import io.xunyss.commons.openssl.OpenSSL;
 import io.xunyss.commons.reflect.JarClassLoader;
-import io.xunyss.openssl.OpenSSL;
 
 /**
  * GK.
@@ -35,35 +33,21 @@ public class GK {
 	
 	public static void main(String[] args) throws Exception {
 		
-		File curr = new File(".");
-		System.out.println(curr.getAbsolutePath());
-		
-		if (ArrayUtils.isArray(args)) {
-			return;
-		}
-		
 		// 0. set working directory
 		File workingDir = new File("./temp_work");
 		
 		try {
 			// 1. download "lcs-installer.zip"
-			Log.out("download 'lcs-installer.zip'");
-			Log.out();
-			
-			HTTPDownloader downloader = new HTTPDownloader();
-			downloader.setDownloadPath(workingDir);
-			if (args.length > 2) {
-				downloader.setProxy(args[0], args[1], Integer.parseInt(args[2]));
-			}
-			String downloadURL = Const.downloadURL;
-			String downloadedFile = downloader.download(downloadURL);
-			
+//			Log.out("download 'lcs-installer.zip'");
+//			Log.out();
+//
 			// 2. unzip "lcs-installer.zip"
 			Log.out("extract 'lcs-installer.zip'");
-			ZipUtils.unzip(downloadedFile, workingDir);
-
+//			ZipUtils.unzip(downloadedFile, workingDir);
+			ZipUtils.unzip("D:\\xdev\\works\\intellij-projects\\io.xunyss\\temp_work\\license-server-installer.zip", workingDir);
+			
 			// 3. get MODULUS, PRIVATE_EXPONENT
-			Class<?> clazz = JarClassLoader.loadClass(new File(workingDir, Const.svJar), Const.fpkkCls);
+			Class<?> clazz = JarClassLoader.loadClass(new File(workingDir, Consts.srvJar), Consts.fpkkCls);
 			Field fieldModulus = clazz.getDeclaredField("MODULUS");
 			Field fielPprivateExponent = clazz.getDeclaredField("PRIVATE_EXPONENT");
 			fieldModulus.setAccessible(true);
@@ -79,12 +63,11 @@ public class GK {
 			File generatedkeyFile = new File(workingDir, "ideax.temp.pem");
 			IOUtils.copy(generatedKey, generatedkeyFile);
 			Log.out("generated private key:\n" + generatedKey);
-
+			
 			// 5. convert private key
 			OpenSSL openssl = new OpenSSL();
 			openssl.exec("rsa", "-in", generatedkeyFile.getPath(), "-modulus");
 			String pemStr = openssl.getOutput();
-			
 			Log.out("converted private key:\n" + pemStr);
 			
 			// 6. create "ideax.pem"
@@ -93,13 +76,22 @@ public class GK {
 			IOUtils.copy(pemStr, new File("ideax.pem"));
 			Log.out("'ideax.pem' is created");
 		}
-		catch (Exception e) {
-			Log.err("fail to create key file 'ideax.pem'", e);
+		catch (Exception ex) {
+			Log.err("fail to create key file 'ideax.pem'", ex);
 		}
 		finally {
 			// 7. remove temp working directory
-			FileUtils.deleteDirectory(workingDir);
+//			FileUtils.deleteDirectory(workingDir);
 		}
+	}
+	
+	private String download() {
+		HttpDownloader downloader = new HttpDownloader();
+		if (args.length > 2) {
+			downloader.setProxy(args[0], args[1], Integer.parseInt(args[2]));
+		}
+		String downloadURL = Consts.downUrl;
+		String downloadedFile = downloader.download(downloadURL);		
 	}
 	
 	private static String generatePrivateKey(String modules, String privateExponent) throws Exception {
@@ -118,27 +110,5 @@ public class GK {
 		}
 
 		return stringWriter.toString();
-	}
-	
-	
-	//----------------------------------------------------------------------------------------------
-	
-	static class Const {
-		
-		static byte[] _downloadURL = {0x68, 0x74, 0x74, 0x70, 0x3a, 0x2f, 0x2f, 0x64, 0x6f, 0x77, 0x6e, 0x6c, 0x6f, 0x61, 0x64, 0x2e, 0x6a, 0x65, 0x74, 0x62, 0x72, 0x61, 0x69, 0x6e, 0x73, 0x2e, 0x63, 0x6f, 0x6d, 0x2f, 0x6c, 0x63, 0x73, 0x72, 0x76, 0x2f, 0x6c, 0x69, 0x63, 0x65, 0x6e, 0x73, 0x65, 0x2d, 0x73, 0x65, 0x72, 0x76, 0x65, 0x72, 0x2d, 0x69, 0x6e, 0x73, 0x74, 0x61, 0x6c, 0x6c, 0x65, 0x72, 0x2e, 0x7a, 0x69, 0x70};
-		static String downloadURL = new String(_downloadURL);
-		
-		static byte[] _sJar = {0x2f, 0x77, 0x65, 0x62, 0x2f, 0x57, 0x45, 0x42, 0x2d, 0x49, 0x4e, 0x46, 0x2f, 0x6c, 0x69, 0x62, 0x2f, 0x73, 0x65, 0x72, 0x76, 0x65, 0x72, 0x2e, 0x6a, 0x61, 0x72};
-		static String svJar = new String(_sJar);
-		
-		static byte[] _fpkkCls = {0x63, 0x6f, 0x6d, 0x2e, 0x6a, 0x65, 0x74, 0x62, 0x72, 0x61, 0x69, 0x6e, 0x73, 0x2e, 0x6c, 0x73, 0x2e, 0x66, 0x6c, 0x6f, 0x61, 0x74, 0x69, 0x6e, 0x67, 0x2e, 0x46, 0x6c, 0x6f, 0x61, 0x74, 0x69, 0x6e, 0x67, 0x50, 0x72, 0x69, 0x76, 0x61, 0x74, 0x65, 0x4b, 0x65, 0x79, 0x73, 0x4b, 0x74};
-		static String fpkkCls = new String(_fpkkCls);
-		
-		
-		public static void main(String[] args) {
-			System.out.println(downloadURL);
-			System.out.println(svJar);
-			System.out.println(fpkkCls);
-		}
 	}
 }

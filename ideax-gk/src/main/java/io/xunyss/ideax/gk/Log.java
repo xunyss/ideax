@@ -1,4 +1,4 @@
-package org.xunyss.ideax.gk;
+package io.xunyss.ideax.gk;
 
 /**
  * 
@@ -11,7 +11,7 @@ public class Log {
 	}
 	
 	static void out(String msg) {
-		System.out.println("GK" + msg);
+		System.out.println("GK: " + msg);
 	}
 	
 	static void err(String msg, Throwable t) {
