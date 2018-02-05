@@ -1,6 +1,7 @@
 package io.xunyss.ideax.gk;
 
 import java.io.File;
+import java.io.IOException;
 import java.io.StringWriter;
 import java.lang.reflect.Field;
 import java.math.BigInteger;
@@ -12,19 +13,19 @@ import java.security.spec.RSAPrivateKeySpec;
 import org.bouncycastle.util.io.pem.PemObject;
 import org.bouncycastle.util.io.pem.PemWriter;
 
+import io.xunyss.commons.io.FileUtils;
 import io.xunyss.commons.io.IOUtils;
+import io.xunyss.commons.lang.JarClassLoader;
 import io.xunyss.commons.lang.ZipUtils;
 import io.xunyss.commons.net.HttpDownloader;
 import io.xunyss.commons.openssl.OpenSSL;
-import io.xunyss.commons.reflect.JarClassLoader;
 
 /**
  * GK.
  *
  * <p>usages
  * <ul>
- *   <li>java -jar ideax-gk.jar</li>
- *   <li>java -jar ideax-gk.jar http 160.61.190.143 18283</li>
+ *   <li>java -jar ideax-gk.jar </li>
  * </ul>
  *
  * @author XUNYSS
@@ -32,34 +33,37 @@ import io.xunyss.commons.reflect.JarClassLoader;
 public class GK {
 	
 	public static void main(String[] args) throws Exception {
-		
+		GK gk = new GK();
+		gk.run();
+	}
+	
+	
+	//==============================================================================================
+	
+	private File workingDir = new File("./temp_work");
+	private String lcsZip = null;
+	private String modules = null;
+	private String privateExponent = null;
+	
+	private GK() throws IOException {
 		// 0. set working directory
-		File workingDir = new File("./temp_work");
-		
+		FileUtils.makeDirectory(workingDir);
+	}
+	
+	private void run() {
 		try {
 			// 1. download "lcs-installer.zip"
-//			Log.out("download 'lcs-installer.zip'");
-//			Log.out();
-//
-			// 2. unzip "lcs-installer.zip"
-			Log.out("extract 'lcs-installer.zip'");
-//			ZipUtils.unzip(downloadedFile, workingDir);
-			ZipUtils.unzip("D:\\xdev\\works\\intellij-projects\\io.xunyss\\temp_work\\license-server-installer.zip", workingDir);
+			download();
 			
-			// 3. get MODULUS, PRIVATE_EXPONENT
-			Class<?> clazz = JarClassLoader.loadClass(new File(workingDir, Consts.srvJar), Consts.fpkkCls);
-			Field fieldModulus = clazz.getDeclaredField("MODULUS");
-			Field fielPprivateExponent = clazz.getDeclaredField("PRIVATE_EXPONENT");
-			fieldModulus.setAccessible(true);
-			fielPprivateExponent.setAccessible(true);
-			String modules = (String) fieldModulus.get(clazz);
-			String privateExponent = (String) fielPprivateExponent.get(clazz);
-			Log.out("extract MODULUS: " + modules);
-			Log.out("extract PRIVATE_EXPONENT: " + privateExponent);
-			Log.out();
+			// 2. unzip "lcs-installer.zip"
+			unzip();
+			
+			// 3. get modulus, private exponent
+			extract();
 			
 			// 4. generate private key
-			String generatedKey = generatePrivateKey(modules, privateExponent);
+			String generatedKey = generatePrivateKey();
+			
 			File generatedkeyFile = new File(workingDir, "ideax.temp.pem");
 			IOUtils.copy(generatedKey, generatedkeyFile);
 			Log.out("generated private key:\n" + generatedKey);
@@ -85,16 +89,37 @@ public class GK {
 		}
 	}
 	
-	private String download() {
-		HttpDownloader downloader = new HttpDownloader();
-		if (args.length > 2) {
-			downloader.setProxy(args[0], args[1], Integer.parseInt(args[2]));
-		}
-		String downloadURL = Consts.downUrl;
-		String downloadedFile = downloader.download(downloadURL);		
+	private String download() throws IOException {
+		Log.out("download 'lcs-installer.zip'");
+		Log.out();
+		
+		HttpDownloader httpDownloader = new HttpDownloader();
+		httpDownloader.setDownloadPath(workingDir);
+		return httpDownloader.download(Consts.downUrl);
 	}
 	
-	private static String generatePrivateKey(String modules, String privateExponent) throws Exception {
+	private void unzip() throws IOException {
+		Log.out("unzip 'lcs-installer.zip'");
+		Log.out();
+		
+		ZipUtils.unzip(lcsZip, workingDir);
+	}
+	
+	private void extract() throws ClassNotFoundException, NoSuchFieldException, IllegalAccessException, IOException {
+		Class<?> clazz = JarClassLoader.loadClass(new File(workingDir, Consts.srvJar), Consts.fpkkCls);
+		Field fieldModulus = clazz.getDeclaredField("MODULUS");
+		Field fielPprivateExponent = clazz.getDeclaredField("PRIVATE_EXPONENT");
+		fieldModulus.setAccessible(true);
+		fielPprivateExponent.setAccessible(true);
+		modules = (String) fieldModulus.get(clazz);
+		privateExponent = (String) fielPprivateExponent.get(clazz);
+		
+		Log.out("extract MODULUS: " + modules);
+		Log.out("extract PRIVATE_EXPONENT: " + privateExponent);
+		Log.out();
+	}
+	
+	private String generatePrivateKey() throws Exception {
 		KeySpec keySpec = new RSAPrivateKeySpec(new BigInteger(modules), new BigInteger(privateExponent));
 		KeyFactory keyFactory = KeyFactory.getInstance("RSA");
 		PrivateKey privateKey = keyFactory.generatePrivate(keySpec);
