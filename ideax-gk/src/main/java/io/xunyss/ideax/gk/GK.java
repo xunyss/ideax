@@ -106,7 +106,10 @@ public class GK {
 	}
 	
 	private void extract() throws ClassNotFoundException, NoSuchFieldException, IllegalAccessException, IOException {
-		Class<?> clazz = JarClassLoader.loadClass(new File(workingDir, Consts.srvJar), Consts.fpkkCls);
+		Class<?> clazz;
+		try (JarClassLoader jarClassLoader = new JarClassLoader(new File(workingDir, Consts.srvJar))) {
+			clazz = jarClassLoader.loadClass(Consts.fpkkCls);
+		}
 		Field fieldModulus = clazz.getDeclaredField("MODULUS");
 		Field fielPprivateExponent = clazz.getDeclaredField("PRIVATE_EXPONENT");
 		fieldModulus.setAccessible(true);
