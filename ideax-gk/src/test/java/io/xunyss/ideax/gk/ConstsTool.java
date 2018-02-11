@@ -3,6 +3,10 @@ package io.xunyss.ideax.gk;
 import org.junit.Ignore;
 import org.junit.Test;
 
+/**
+ * 
+ * @author XUNYSS
+ */
 public class ConstsTool {
 	
 	@Ignore
