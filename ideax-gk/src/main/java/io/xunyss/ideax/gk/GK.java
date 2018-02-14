@@ -25,11 +25,6 @@ import io.xunyss.commons.openssl.OpenSSL;
 /**
  * GK.
  *
- * <p>usages
- * <ul>
- *   <li>java -jar ideax-gk.jar </li>
- * </ul>
- *
  * @author XUNYSS
  */
 public class GK {
@@ -40,31 +35,77 @@ public class GK {
 	 * @throws Exception
 	 */
 	public static void main(String[] args) throws Exception {
-		GK gk = new GK();
-		gk.run();
+		
+		//------------------------------------------------------------------------------------------
+		// java -jar gk.jar -s(show url)
+		// java -jar gk.jar -d(download)
+		// java -jar gk.jar -z(zip path) "/data/lcs-installer.zip"
+		//------------------------------------------------------------------------------------------
+		
+		boolean down = false;
+		String zip = null;
+		
+		for (int i = 0; i < args.length; i++) {
+			if ("-s".equals(args[i])) {
+				Log.out(Consts.downUrl);
+				Log.out();
+				return;
+			}
+			else if ("-d".equals(args[i])) {
+				down = true;
+				break;
+			}
+			else if ("-z".equals(args[i])) {
+				if (i == args.length - 1) {
+					usage();
+					return;
+				}
+				zip = args[i + 1];
+				break;
+			}
+		}
+		
+		if (down == false && zip == null) {
+			usage();
+			return;
+		}
+		
+		// start GK
+		new GK().run(down, zip);
+	}
+	
+	private static final void usage() {
+		Log.out("Invalid arguments");
+		Log.out("Bye..");
+		Log.out();
 	}
 	
 	
 	//==============================================================================================
 	
 	private File workingDir = new File("./temp_work");
+	
 	private String lcsZip = null;
 	private String modules = null;
 	private String privateExponent = null;
 	private File generatedkeyFile = null;
 	private String pemString = null;
 	
+	
 	private GK() throws IOException {
 		// 0. set working directory
 		FileUtils.makeDirectory(workingDir);
 	}
 	
-	private void run() {
+	private void run(boolean down, String zip) {
 		try {
 			// 1. download "lcs-installer.zip"
-			download();
+			if (down) {
+				download();
+			}
 			
 			// 2. unzip "lcs-installer.zip"
+			lcsZip = (zip != null ? zip : lcsZip);
 			unzip();
 			
 			// 3. get modulus, private exponent
@@ -80,48 +121,82 @@ public class GK {
 			createPem();
 		}
 		catch (Exception ex) {
-			Log.err("fail to create key file 'ideax.pem'", ex);
+			Log.err("Failed to create key file 'ideax.pem'", ex);
 		}
 		finally {
 			// 7. remove temp working directory
-//			FileUtils.deleteDirectory(workingDir);
+			try {
+				FileUtils.deleteDirectory(workingDir);
+			}
+			catch (IOException ex) {
+				Log.err("Failed to delete temporary directory", ex);
+			}
 		}
 	}
 	
-	private String download() throws IOException {
-		Log.out("download 'lcs-installer.zip'");
+	/**
+	 * 
+	 * @throws IOException
+	 */
+	private void download() throws IOException {
+		Log.out("Download 'lcs-installer.zip'");
 		Log.out();
 		
 		HttpDownloader httpDownloader = new HttpDownloader();
 		httpDownloader.setDownloadPath(workingDir);
-		return httpDownloader.download(Consts.downUrl);
+		lcsZip = httpDownloader.download(Consts.downUrl);
 	}
 	
+	/**
+	 * 
+	 * @throws IOException
+	 */
 	private void unzip() throws IOException {
-		Log.out("unzip 'lcs-installer.zip'");
+		Log.out("Unzip 'lcs-installer.zip'");
 		Log.out();
 		
 		ZipUtils.unzip(lcsZip, workingDir);
 	}
 	
+	/**
+	 * 
+	 * @throws ClassNotFoundException
+	 * @throws NoSuchFieldException
+	 * @throws IllegalAccessException
+	 * @throws IOException
+	 */
 	private void extract() throws ClassNotFoundException, NoSuchFieldException, IllegalAccessException, IOException {
 		Class<?> clazz;
 		try (JarClassLoader jarClassLoader = new JarClassLoader(new File(workingDir, Consts.srvJar))) {
-			clazz = jarClassLoader.loadClass(Consts.fpkkCls);
+			// version 1
+//			clazz = jarClassLoader.loadClass(Consts.fpkkClsV1);
+			// version 2
+			clazz = jarClassLoader.loadClass(Consts.fpkkClsV2);
 		}
 		
-		Field fieldModulus = clazz.getDeclaredField("MODULUS");
-		Field fielPprivateExponent = clazz.getDeclaredField("PRIVATE_EXPONENT");
+		// version 1
+//		Field fieldModulus = clazz.getDeclaredField("MODULUS");
+//		Field fielPprivateExponent = clazz.getDeclaredField("PRIVATE_EXPONENT");
+		// version 2
+		Field fieldModulus = clazz.getDeclaredField("d");
+		Field fielPprivateExponent = clazz.getDeclaredField("a");
+		
 		fieldModulus.setAccessible(true);
 		fielPprivateExponent.setAccessible(true);
 		modules = (String) fieldModulus.get(clazz);
 		privateExponent = (String) fielPprivateExponent.get(clazz);
 		
-		Log.out("extract MODULUS: " + modules);
-		Log.out("extract PRIVATE_EXPONENT: " + privateExponent);
+		Log.out("Extract MODULUS: " + modules);
+		Log.out("Extract PRIVATE_EXPONENT: " + privateExponent);
 		Log.out();
 	}
 	
+	/**
+	 * 
+	 * @throws NoSuchAlgorithmException
+	 * @throws InvalidKeySpecException
+	 * @throws IOException
+	 */
 	private void generateKey() throws NoSuchAlgorithmException, InvalidKeySpecException, IOException {
 		KeySpec keySpec = new RSAPrivateKeySpec(new BigInteger(modules), new BigInteger(privateExponent));
 		KeyFactory keyFactory = KeyFactory.getInstance("RSA");
@@ -132,31 +207,40 @@ public class GK {
 		PemWriter pemWriter = new PemWriter(stringWriter);
 		try {
 			pemWriter.writeObject(new PemObject("RSA PRIVATE KEY", privateKey.getEncoded()));
-			generatedKey = stringWriter.toString();
 		}
 		finally {
 			IOUtils.closeQuietly(pemWriter);
+			generatedKey = stringWriter.toString();
 		}
 		
 		generatedkeyFile = new File(workingDir, "ideax.temp.pem");
 		IOUtils.copy(generatedKey, generatedkeyFile);
 		
-		Log.out("generated private key:\n" + generatedKey);
+		Log.out("Generated private key:\n" + generatedKey);
 	}
 	
+	/**
+	 * 
+	 * @throws IOException
+	 */
 	private void convertKey() throws IOException  {
 		OpenSSL openssl = new OpenSSL();
 		openssl.exec("rsa", "-in", generatedkeyFile.getPath(), "-modulus");
 		pemString = openssl.getOutput();
 		
-		Log.out("converted private key:\n" + pemString);
+		Log.out("Converted private key:\n" + pemString);
 	}
 	
+	/**
+	 * 
+	 * @throws IOException
+	 */
 	private void createPem() throws IOException {
 		int startPos = pemString.indexOf("-----BEGIN RSA PRIVATE KEY-----");
 		pemString = pemString.substring(startPos);
 		IOUtils.copy(pemString, new File("ideax.pem"));
 		
 		Log.out("'ideax.pem' is created");
+		Log.out();
 	}
 }

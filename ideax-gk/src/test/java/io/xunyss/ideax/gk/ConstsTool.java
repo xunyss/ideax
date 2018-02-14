@@ -36,6 +36,7 @@ public class ConstsTool {
 	public void print() {
 		System.out.println(Consts.downUrl);
 		System.out.println(Consts.srvJar);
-		System.out.println(Consts.fpkkCls);
+		System.out.println(Consts.fpkkClsV1);
+		System.out.println(Consts.fpkkClsV2);
 	}
 }
