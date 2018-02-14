@@ -6,7 +6,9 @@ import java.io.StringWriter;
 import java.lang.reflect.Field;
 import java.math.BigInteger;
 import java.security.KeyFactory;
+import java.security.NoSuchAlgorithmException;
 import java.security.PrivateKey;
+import java.security.spec.InvalidKeySpecException;
 import java.security.spec.KeySpec;
 import java.security.spec.RSAPrivateKeySpec;
 
@@ -32,6 +34,11 @@ import io.xunyss.commons.openssl.OpenSSL;
  */
 public class GK {
 	
+	/**
+	 * 
+	 * @param args
+	 * @throws Exception
+	 */
 	public static void main(String[] args) throws Exception {
 		GK gk = new GK();
 		gk.run();
@@ -44,6 +51,8 @@ public class GK {
 	private String lcsZip = null;
 	private String modules = null;
 	private String privateExponent = null;
+	private File generatedkeyFile = null;
+	private String pemString = null;
 	
 	private GK() throws IOException {
 		// 0. set working directory
@@ -62,23 +71,13 @@ public class GK {
 			extract();
 			
 			// 4. generate private key
-			String generatedKey = generatePrivateKey();
-			
-			File generatedkeyFile = new File(workingDir, "ideax.temp.pem");
-			IOUtils.copy(generatedKey, generatedkeyFile);
-			Log.out("generated private key:\n" + generatedKey);
+			generateKey();
 			
 			// 5. convert private key
-			OpenSSL openssl = new OpenSSL();
-			openssl.exec("rsa", "-in", generatedkeyFile.getPath(), "-modulus");
-			String pemStr = openssl.getOutput();
-			Log.out("converted private key:\n" + pemStr);
+			convertKey();
 			
 			// 6. create "ideax.pem"
-			int startPos = pemStr.indexOf("-----BEGIN RSA PRIVATE KEY-----");
-			pemStr = pemStr.substring(startPos);
-			IOUtils.copy(pemStr, new File("ideax.pem"));
-			Log.out("'ideax.pem' is created");
+			createPem();
 		}
 		catch (Exception ex) {
 			Log.err("fail to create key file 'ideax.pem'", ex);
@@ -110,6 +109,7 @@ public class GK {
 		try (JarClassLoader jarClassLoader = new JarClassLoader(new File(workingDir, Consts.srvJar))) {
 			clazz = jarClassLoader.loadClass(Consts.fpkkCls);
 		}
+		
 		Field fieldModulus = clazz.getDeclaredField("MODULUS");
 		Field fielPprivateExponent = clazz.getDeclaredField("PRIVATE_EXPONENT");
 		fieldModulus.setAccessible(true);
@@ -122,21 +122,41 @@ public class GK {
 		Log.out();
 	}
 	
-	private String generatePrivateKey() throws Exception {
+	private void generateKey() throws NoSuchAlgorithmException, InvalidKeySpecException, IOException {
 		KeySpec keySpec = new RSAPrivateKeySpec(new BigInteger(modules), new BigInteger(privateExponent));
 		KeyFactory keyFactory = KeyFactory.getInstance("RSA");
 		PrivateKey privateKey = keyFactory.generatePrivate(keySpec);
 
+		String generatedKey;
 		StringWriter stringWriter = new StringWriter();
 		PemWriter pemWriter = new PemWriter(stringWriter);
-		
 		try {
 			pemWriter.writeObject(new PemObject("RSA PRIVATE KEY", privateKey.getEncoded()));
+			generatedKey = stringWriter.toString();
 		}
 		finally {
 			IOUtils.closeQuietly(pemWriter);
 		}
-
-		return stringWriter.toString();
+		
+		generatedkeyFile = new File(workingDir, "ideax.temp.pem");
+		IOUtils.copy(generatedKey, generatedkeyFile);
+		
+		Log.out("generated private key:\n" + generatedKey);
+	}
+	
+	private void convertKey() throws IOException  {
+		OpenSSL openssl = new OpenSSL();
+		openssl.exec("rsa", "-in", generatedkeyFile.getPath(), "-modulus");
+		pemString = openssl.getOutput();
+		
+		Log.out("converted private key:\n" + pemString);
+	}
+	
+	private void createPem() throws IOException {
+		int startPos = pemString.indexOf("-----BEGIN RSA PRIVATE KEY-----");
+		pemString = pemString.substring(startPos);
+		IOUtils.copy(pemString, new File("ideax.pem"));
+		
+		Log.out("'ideax.pem' is created");
 	}
 }
