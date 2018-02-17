@@ -1,7 +1,9 @@
-package org.xunyss.ideax.log;
+package io.xunyss.ideax.log;
 
 import org.junit.Ignore;
 import org.junit.Test;
+
+import io.xunyss.ideax.log.Log;
 
 /**
  * 

@@ -1,8 +1,10 @@
-package org.xunyss.ideax;
+package io.xunyss.ideax;
 
 import java.net.InetAddress;
 
 import org.junit.Test;
+
+import io.xunyss.ideax.AppLauncher;
 
 /**
  * 

@@ -240,7 +240,7 @@ public class GK {
 		pemString = pemString.substring(startPos);
 		FileUtils.copy(pemString, new File("ideax.pem"));
 		
-		Log.out("'ideax.pem' is created");
+		Log.out("Key file 'ideax.pem' is created");
 		Log.out();
 	}
 }

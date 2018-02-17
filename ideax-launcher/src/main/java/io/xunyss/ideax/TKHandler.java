@@ -1,4 +1,4 @@
-package org.xunyss.ideax;
+package io.xunyss.ideax;
 
 import java.io.IOException;
 
@@ -9,7 +9,8 @@ import javax.servlet.http.HttpServletResponse;
 import org.eclipse.jetty.http.HttpMethod;
 import org.eclipse.jetty.server.Request;
 import org.eclipse.jetty.server.handler.AbstractHandler;
-import org.xunyss.ideax.log.Log;
+
+import io.xunyss.ideax.log.Log;
 
 /**
  * 

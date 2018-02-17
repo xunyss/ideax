@@ -1,10 +1,10 @@
-package org.xunyss.ideax;
+package io.xunyss.ideax;
 
 import java.io.File;
 import java.io.FileFilter;
 import java.io.IOException;
 
-import org.xunyss.ideax.log.Log;
+import io.xunyss.ideax.log.Log;
 
 /**
  * 

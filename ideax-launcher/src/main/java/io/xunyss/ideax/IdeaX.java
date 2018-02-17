@@ -1,9 +1,10 @@
-package org.xunyss.ideax;
+package io.xunyss.ideax;
 
 import java.net.BindException;
 
 import org.eclipse.jetty.server.Server;
-import org.xunyss.ideax.log.Log;
+
+import io.xunyss.ideax.log.Log;
 
 /**
  * 

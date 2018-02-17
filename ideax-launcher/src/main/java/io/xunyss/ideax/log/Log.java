@@ -1,4 +1,4 @@
-package org.xunyss.ideax.log;
+package io.xunyss.ideax.log;
 
 import java.io.PrintStream;
 import java.util.Date;
