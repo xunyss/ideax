@@ -1,5 +1,6 @@
 package org.xunyss.ideax.log;
 
+import org.junit.Ignore;
 import org.junit.Test;
 
 /**
@@ -8,6 +9,7 @@ import org.junit.Test;
  */
 public class LogTest {
 	
+	@Ignore
 	@Test
 	public void logging() {
 		Log.debug("this is debug message");

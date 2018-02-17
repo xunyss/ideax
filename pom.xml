@@ -1,3 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
 <project
 	xmlns="http://maven.apache.org/POM/4.0.0"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
@@ -7,13 +8,15 @@
 	
 	<groupId>io.xunyss.ideax</groupId>
 	<artifactId>ideax</artifactId>
-	<version>1.0.0-RELEASE</version>
+	<version>1.1.0-RELEASE</version>
 	<packaging>pom</packaging>
 	
 	<name>ideax</name>
 	<description>ideax</description>
 	
 	<modules>
+		<module>ideax-gk</module>
+		<module>ideax-launcher</module>
 	</modules>
 	
 	<properties>
