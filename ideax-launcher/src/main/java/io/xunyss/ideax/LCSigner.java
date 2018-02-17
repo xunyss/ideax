@@ -88,7 +88,7 @@ public class LCSigner {
 		PEMParser pemParser = null;
 		
 		try {
-			File ideaxPem = new File("./" + PEM_RESOURCE_PATH);
+			File ideaxPem = new File(PEM_RESOURCE_PATH);
 			
 			if (ideaxPem.isFile()) {
 				pemInput = new FileInputStream(ideaxPem);
