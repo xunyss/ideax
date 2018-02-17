@@ -20,7 +20,7 @@ import io.xunyss.commons.io.IOUtils;
 import io.xunyss.commons.lang.JarClassLoader;
 import io.xunyss.commons.lang.ZipUtils;
 import io.xunyss.commons.net.HttpDownloader;
-import io.xunyss.commons.openssl.OpenSSL;
+import io.xunyss.openssl.OpenSSL;
 
 /**
  * GK.
@@ -76,7 +76,7 @@ public class GK {
 	
 	private static final void usage() {
 		Log.out("Invalid arguments");
-		Log.out("Bye..");
+		Log.out("Usage: GK -sdz");
 		Log.out();
 	}
 	
@@ -214,7 +214,7 @@ public class GK {
 		}
 		
 		generatedkeyFile = new File(workingDir, "ideax.temp.pem");
-		IOUtils.copy(generatedKey, generatedkeyFile);
+		FileUtils.copy(generatedKey, generatedkeyFile);
 		
 		Log.out("Generated private key:\n" + generatedKey);
 	}
@@ -238,7 +238,7 @@ public class GK {
 	private void createPem() throws IOException {
 		int startPos = pemString.indexOf("-----BEGIN RSA PRIVATE KEY-----");
 		pemString = pemString.substring(startPos);
-		IOUtils.copy(pemString, new File("ideax.pem"));
+		FileUtils.copy(pemString, new File("ideax.pem"));
 		
 		Log.out("'ideax.pem' is created");
 		Log.out();
