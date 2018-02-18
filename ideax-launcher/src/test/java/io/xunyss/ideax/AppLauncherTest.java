@@ -2,9 +2,8 @@ package io.xunyss.ideax;
 
 import java.net.InetAddress;
 
+import org.junit.Ignore;
 import org.junit.Test;
-
-import io.xunyss.ideax.AppLauncher;
 
 /**
  * 
@@ -19,6 +18,7 @@ public class AppLauncherTest {
 		System.out.println(System.getProperty("os.arch"));
 	}
 	
+	@Ignore
 	@Test
 	public void loopback() throws Exception {
 		InetAddress ia = InetAddress.getByName("PN-201705188-01");

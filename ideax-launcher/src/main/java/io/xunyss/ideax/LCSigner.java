@@ -15,6 +15,7 @@ import org.bouncycastle.openssl.PEMParser;
 import org.bouncycastle.openssl.jcajce.JcaPEMKeyConverter;
 
 import io.xunyss.commons.io.IOUtils;
+import io.xunyss.ideax.codec.SimpleFileDecoder;
 import io.xunyss.ideax.log.Log;
 
 /**
@@ -89,34 +90,35 @@ public class LCSigner {
 		
 		try {
 			File ideaxPem = new File(PEM_RESOURCE_PATH);
-			
 			if (ideaxPem.isFile()) {
 				pemInput = new FileInputStream(ideaxPem);
 			}
 			/*
-			 * 2016.11.17
+			 * 2016.11.17 XUNYSS
 			 * disable "embedded resource" > remove "resource PEM file"
+			 * 2018.02.18 XUNYSS
+			 * "embedded resource" > simple encoding
 			 */
 			else {
-				pemInput = ClassLoader.getSystemResourceAsStream(PEM_RESOURCE_PATH);
-				if (pemInput == null) {
-					pemInput = Thread.currentThread().getContextClassLoader()
-							.getResourceAsStream(PEM_RESOURCE_PATH);
+				InputStream pemResourceInput = ClassLoader.getSystemResourceAsStream(PEM_RESOURCE_PATH);
+				if (pemResourceInput == null) {
+					pemResourceInput = Thread.currentThread().getContextClassLoader().getResourceAsStream(PEM_RESOURCE_PATH);
 				}
 				if (pemInput == null) {
-					pemInput = getClass().getClassLoader()
-							.getResourceAsStream(PEM_RESOURCE_PATH);
+					pemResourceInput = getClass().getClassLoader().getResourceAsStream(PEM_RESOURCE_PATH);
+				}
+				
+				if (pemResourceInput != null) {
+					pemInput = new SimpleFileDecoder(pemResourceInput);
 				}
 			}
 			
 			if (pemInput == null) {
-				throw new IOException("fail initializing: PEM resource not found: " + PEM_RESOURCE_PATH);
+				throw new IOException("Fail to initialize: PEM resource not found: " + PEM_RESOURCE_PATH);
 			}
 			
 			pemParser = new PEMParser(new InputStreamReader(pemInput));
-			Object pem = pemParser.readObject();
-			
-			return pem;
+			return pemParser.readObject();
 		}
 		catch (IOException ioe) {
 			throw ioe;

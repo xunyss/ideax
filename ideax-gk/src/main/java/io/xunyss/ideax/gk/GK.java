@@ -45,22 +45,22 @@ public class GK {
 		boolean down = false;
 		String zip = null;
 		
-		for (int i = 0; i < args.length; i++) {
-			if ("-s".equals(args[i])) {
+		for (int idx = 0; idx < args.length; idx++) {
+			if ("-s".equals(args[idx])) {
 				Log.out(Consts.downUrl);
 				Log.out();
 				return;
 			}
-			else if ("-d".equals(args[i])) {
+			else if ("-d".equals(args[idx])) {
 				down = true;
 				break;
 			}
-			else if ("-z".equals(args[i])) {
-				if (i == args.length - 1) {
+			else if ("-z".equals(args[idx])) {
+				if (idx == args.length - 1) {
 					usage();
 					return;
 				}
-				zip = args[i + 1];
+				zip = args[idx + 1];
 				break;
 			}
 		}

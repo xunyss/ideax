@@ -84,7 +84,7 @@ public class TKHandler extends AbstractHandler {
 //		String r10 = request.getParameter("vers" + "ion");
 //		String r11 = request.getParameter("vers" + "ionN" + "umbe" + "r");
 		
-		final int prolongation_period = 607875500;
+		final int prolongation_period = 607_875_500;
 		final String responseXml = ""
 				+ "<Obt" + "ainT" + "icke" + "tRes" + "pons" + "e>"
 				+ "<mes" + "sage" + "></m" + "essa" + "ge>"
@@ -157,8 +157,8 @@ public class TKHandler extends AbstractHandler {
 	 * 
 	 */
 	private void stopServer() {
-		final long serverStopTimeout = 10000L;
-		final long serverStopDelay = 3000L;
+		final long serverStopTimeout = 10_000L;
+		final long serverStopDelay = 3_000L;
 		getServer().setStopTimeout(serverStopTimeout);
 		
 		new Thread() {
