@@ -27,7 +27,9 @@ public class SimpleFileEncodeTool {
 		int cnt = 0;
 		for (int idx = 0; idx < data.length; idx++) {
 			System.out.print(String.format("%02x ", 0xff ^ data[idx]));
-			if ((++cnt % 32) == 0) System.out.println();
+			if ((++cnt % 32) == 0) {
+				System.out.println();
+			}
 		}
 	}
 	

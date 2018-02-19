@@ -1,21 +1,18 @@
 package io.xunyss.ideax;
 
-import java.net.BindException;
-
 import org.eclipse.jetty.server.Server;
 
+import io.xunyss.commons.exec.ProcessExecutor;
 import io.xunyss.commons.lang.StringUtils;
+import io.xunyss.ideax.lcs.LCServer;
+import io.xunyss.ideax.lcs.TKHandleListener;
 import io.xunyss.ideax.log.Log;
 
 /**
  * 
  * @author XUNYSS
  */
-public class IdeaX {
-	
-	/*
-	 * TODO: welcome page service
-	 */
+public class XL {
 	
 	/**
 	 * 
@@ -55,7 +52,7 @@ public class IdeaX {
 			}
 			
 			if (!serverMode && executable == null) {
-				throw new IllegalArgumentException();
+				throw new IllegalArgumentException("Invalid arguments");
 			}
 		}
 		catch (Exception ex) {
@@ -63,7 +60,7 @@ public class IdeaX {
 			return;
 		}
 		
-		new IdeaX().run(port, serverMode, executable);
+		new XL().run(port, serverMode, executable);
 	}
 	
 	private static void usage() {
@@ -77,36 +74,53 @@ public class IdeaX {
 	private void run(int port, boolean serverMode, String executable) throws Exception {
 		
 		if (serverMode) {
+			Log.info("Start LCS..");
+			LCServer lcserver = new LCServer(port, true);
+			lcserver.start();
+			
+			Log.info("LCS address: http://<hostname>:" + port);
+			Log.info("LCS is ready..");
+			lcserver.join();
 		}
 		else {
+			// 1. jetty
+			final LCServer lcserver = new LCServer(port, true, new TKHandleListener() {
+				@Override
+				public void handled(Server server) {
+					try {
+						lcserver.stop();
+					}
+					catch (Exception ex) {
+						ex.printStackTrace();
+					}
+				}
+			});
 			
+			Log.info("LCS address: http://<hostname>:" + port);
+			Log.info("LCS is ready..");
+			lcserver.join();
+			
+			lcserver.start();
+			// 2. localtunnel
+			
+			// 3. executable
+			if (StringUtils.isNotEmpty(executable)) {
+				Log.info("Start application..");
+				AppLauncher.exec(executable);
+				new ProcessExecutor().execute(executable);
+				// process's streams 을 명시적으로 close 하지 않는 것이 문제가 되는지 확인!
+			}
 		}
 		
-		Log.info("Initialize LCSigner");
-		LCSigner.getInstance().init();
-		
-		Log.info("Start LCS..");
-		Server server = new Server(port);
-		server.setHandler(new TKHandler(false));
-		try {
-			server.start();
-		}
-		catch (BindException ex) {
-			server.stop();
-			Log.error(ex.getMessage());
-			return;
-		}		
 		
 		
-		if (StringUtils.isNotEmpty(executable)) {
-			Log.info("Start application..");
-			AppLauncher.exec(executable);
-		}
-		
-		Log.info("LCS is ready..");
-		Log.info("LCS address: http://<hostname>:" + port);
-		server.join();
+
 		
 		Log.info("LCS is stopped");
+		
+		
+		
+		
+		// Control + C 종료시 리소스 반환/정상 종료 처리
 	}
 }

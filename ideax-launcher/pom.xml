@@ -21,7 +21,7 @@
 		<!-- 9.3 이상부터 jre8 필요 -->
 		<jetty.version>9.2.24.v20180105</jetty.version>
 		<!-- mainClass -->
-		<mainClass>io.xunyss.ideax.IdeaX</mainClass>
+		<mainClass>io.xunyss.ideax.XL</mainClass>
 	</properties>
 	
 	<dependencies>

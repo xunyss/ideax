@@ -1,4 +1,4 @@
-package io.xunyss.ideax;
+package io.xunyss.ideax.lcs;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -147,8 +147,8 @@ public class LCSigner {
 			
 			int signLen = signData.length;
 			for (int at = 0; at < signLen; at++) {
-				signed.append(digitChar(signData[at] >> 4 & 0xF));
-				signed.append(digitChar(signData[at] & 0xF));
+				signed.append(digitChar(signData[at] >> 4 & 0xf));
+				signed.append(digitChar(signData[at] & 0xf));
 			}
 			
 			return signed.toString();

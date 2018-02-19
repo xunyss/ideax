@@ -12,6 +12,8 @@ import io.xunyss.commons.io.IOUtils;
  */
 public class SimpleFileDecoder extends InputStream {
 	
+	private static final int RADIX_HEXA = 16;
+	
 	private InputStream inputStream;
 	
 	
@@ -45,7 +47,7 @@ public class SimpleFileDecoder extends InputStream {
 		}
 		be = inputStream.read();
 		String sb = String.format("%c%c", bs, be);
-		return Integer.parseInt(sb, 16) & 0xff ^ 0xff;
+		return Integer.parseInt(sb, RADIX_HEXA) & 0xff ^ 0xff;
 	}
 
 	@Override

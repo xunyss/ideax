@@ -10,6 +10,7 @@ import io.xunyss.ideax.log.Log;
  * 
  * @author XUNYSS
  */
+@Deprecated
 public class AppLauncher {
 	
 	private static final String DIR_COMPANY = "Je" + "tB" + "ra" + "in" + "s";
@@ -42,7 +43,7 @@ public class AppLauncher {
 			Log.error("cannot find application");
 		}
 	}
-
+	
 	protected static String findApp() {
 		String appPath = findApp(System.getenv(ENV_PROGRAMFILES));
 		

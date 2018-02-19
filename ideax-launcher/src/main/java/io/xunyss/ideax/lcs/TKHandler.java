@@ -1,4 +1,4 @@
-package io.xunyss.ideax;
+package io.xunyss.ideax.lcs;
 
 import java.io.IOException;
 
@@ -23,10 +23,10 @@ public class TKHandler extends AbstractHandler {
 	private static final String URI_RELEASE_TK =
 			"/r" + "pc" + "/r" + "el" + "ea" + "se" + "Ti" + "ck" + "et" + ".a" + "ct" + "io" + "n";
 	
-	private boolean autostop = true;
+	private TKHandleListener listener;
 	
-	public TKHandler(boolean autostop) {
-		this.autostop = autostop;
+	public TKHandler(TKHandleListener listener) {
+		this.listener = listener;
 	}
 	
 	/**
@@ -38,28 +38,50 @@ public class TKHandler extends AbstractHandler {
 			HttpServletRequest request, HttpServletResponse response)
 			throws IOException, ServletException {
 		
-		Log.debug("REQUEST >>");
-		Log.debug(request.getRequestURI());
-		Log.debug(request.getQueryString());
-		
 		if (response.isCommitted() || baseRequest.isHandled()) {
 			return;
 		}
 		
-		baseRequest.setHandled(true);
+		// enable to handle
+		if (HttpMethod.valueOf(request.getMethod()) == HttpMethod.GET && enableHandle(target)) {
+			
+			// set true handled flag
+			baseRequest.setHandled(true);
+			
+			Log.debug("REQUEST << " + request.getRemoteAddr());
+			Log.debug(request.getRequestURI());
+			Log.debug(request.getQueryString());
+			
+			switch (target) {
+				case URI_OBTAIN_TK:
+					handleObtain(request, response);
+					break;
+				case URI_RELEASE_TK:
+					handleRelease(request, response);
+					break;
+			}
+			
+			// notify to listener
+			if (listener != null) {
+				listener.handled(getServer());
+			}
+		}
 		
-		HttpMethod requestMethod = HttpMethod.valueOf(request.getMethod());
-		
-		if (requestMethod == HttpMethod.GET && target.equals(URI_OBTAIN_TK)) {
-			handleObtain(request, response);
-		}
-		else if (requestMethod == HttpMethod.GET && target.equals(URI_RELEASE_TK)) {
-			handleRelease(request, response);
-		}
-		else {
-			response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-			response.getWriter().write("Bad Request");
-		}
+		// other request
+		// 아무것도 안하고 그냥 return; --> server 에게 맡김
+//		response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+//		response.getWriter().write("Bad Request");
+	}
+	
+	/**
+	 * 
+	 * @param target
+	 * @return
+	 */
+	private boolean enableHandle(String target) {
+		return	target.equals(URI_OBTAIN_TK) ||
+				target.equals(URI_RELEASE_TK)
+				;
 	}
 	
 	/**
@@ -100,13 +122,6 @@ public class TKHandler extends AbstractHandler {
 		
 		responseOK(response,
 				String.format("<!--" + " %s " + "-->\n%s", signature, responseXml));
-		
-		/*
-		 * 
-		 */
-		if (autostop) {
-			stopServer();
-		}
 	}
 	
 	/**
@@ -150,30 +165,6 @@ public class TKHandler extends AbstractHandler {
 		response.setStatus(HttpServletResponse.SC_OK);
 		response.setContentType("text/xml; charset=utf-8");
 		response.getWriter().write(body);
-	}
-	
-	
-	/**
-	 * 
-	 */
-	private void stopServer() {
-		final long serverStopTimeout = 10_000L;
-		final long serverStopDelay = 3_000L;
-		getServer().setStopTimeout(serverStopTimeout);
-		
-		new Thread() {
-			@Override
-			public void run() {
-				try {
-					Log.info("stop lcs..");
-					
-					Thread.sleep(serverStopDelay);
-					getServer().stop();
-				}
-				catch (Exception e) {
-					Log.error("fail to stop lcs", e);
-				}
-			}
-		}.start();
+		response.getWriter().flush();
 	}
 }
