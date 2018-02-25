@@ -25,6 +25,11 @@ public class TKHandler extends AbstractHandler {
 	
 	private TKHandleListener listener;
 	
+	
+	/**
+	 * 
+	 * @param listener
+	 */
 	public TKHandler(TKHandleListener listener) {
 		this.listener = listener;
 	}
@@ -63,7 +68,7 @@ public class TKHandler extends AbstractHandler {
 			
 			// notify to listener
 			if (listener != null) {
-				listener.handled(getServer());
+				listener.handled();
 			}
 		}
 		

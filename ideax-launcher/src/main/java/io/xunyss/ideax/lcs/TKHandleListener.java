@@ -1,30 +1,36 @@
 package io.xunyss.ideax.lcs;
 
-import org.eclipse.jetty.server.Server;
-
-public interface TKHandleListener {
+/**
+ * 
+ * @author XUNYSS
+ */
+public abstract class TKHandleListener {
 	
-	void handled(Server server);
+	/**
+	 * 
+	 */
+	private LCServer lcServer;
 	
 	
-//	private void stopServer(final Server server) {
-//		final long serverStopTimeout = 10_000L;
-//		final long serverStopDelay = 3_000L;
-//		server.setStopTimeout(serverStopTimeout);
-//		
-//		new Thread() {
-//			@Override
-//			public void run() {
-//				try {
-//					Log.info("stop lcs..");
-//					
-//					Thread.sleep(serverStopDelay);
-//					server.stop();
-//				}
-//				catch (Exception e) {
-//					Log.error("fail to stop lcs", e);
-//				}
-//			}
-//		}.start();
-//	}
+	/**
+	 * 
+	 * @param lcServer
+	 */
+	void setLCServer(LCServer lcServer) {
+		this.lcServer = lcServer;
+	}
+	
+	/**
+	 * 
+	 * @return
+	 */
+	protected LCServer getLCServer() {
+		return lcServer;
+	}
+	
+	
+	/**
+	 * 
+	 */
+	public abstract void handled();
 }

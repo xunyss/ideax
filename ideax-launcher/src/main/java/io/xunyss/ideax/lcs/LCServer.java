@@ -17,18 +17,15 @@ public class LCServer {
 	private static final String LCS_WEB_RESOURCES = "io/xunyss/ideax/lcs/webcontents";
 	private static final String[] WELCOME_FILES = {"index.html"};
 	
-	private Server server;
-	
-	private boolean resourceService;
-	private TKHandleListener handleListener;
+	private final Server server;
 	
 	
 	public LCServer(int port, boolean resourceService, TKHandleListener handleListener) throws Exception {
-		this.resourceService = resourceService;
-		this.handleListener = handleListener;
-		
+		if (handleListener != null) {
+			handleListener.setLCServer(this);
+		}
 		server = new Server(port);
-		initHandlers();
+		initHandlers(resourceService, handleListener);
 		
 		Log.info("Initialize LCSigner");
 		LCSigner.getInstance().init();
@@ -38,7 +35,7 @@ public class LCServer {
 		this(port, resourceService, null);
 	}
 	
-	private void initHandlers() {
+	private void initHandlers(boolean resourceService, TKHandleListener handleListener) {
 		// TKHandler
 		TKHandler tkHandler = new TKHandler(handleListener);
 		
@@ -70,11 +67,31 @@ public class LCServer {
 		}
 	}
 	
-	public void stop() throws Exception {
-		server.stop();
-	}
-	
 	public void join() throws InterruptedException {
 		server.join();
+	}
+	
+	public void stop() throws Exception {
+//		server.stop();
+		safetyStop();
+	}
+	
+	private void safetyStop() {
+		final long serverStopTimeout = 10_000L;
+		final long serverStopDelay = 3_000L;
+		server.setStopTimeout(serverStopTimeout);
+		
+		new Thread() {
+			@Override
+			public void run() {
+				try {
+					Thread.sleep(serverStopDelay);
+					server.stop();
+				}
+				catch (Exception ex) {
+					Log.error("Failed to stop LCServer", ex);
+				}
+			}
+		}.start();
 	}
 }
