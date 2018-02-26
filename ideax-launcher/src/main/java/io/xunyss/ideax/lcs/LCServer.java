@@ -23,6 +23,13 @@ public class LCServer {
 	private final Server server;
 	
 	
+	/**
+	 * 
+	 * @param port
+	 * @param resourceService
+	 * @param handleListener
+	 * @throws Exception
+	 */
 	public LCServer(int port, boolean resourceService, TKHandleListener handleListener) throws Exception {
 		if (handleListener != null) {
 			handleListener.setLCServer(this);
@@ -30,20 +37,28 @@ public class LCServer {
 		server = new Server(port);
 		initHandlers(resourceService, handleListener);
 		
-		Log.info("Initialize LCSigner");
+		Log.debug("Initialize LCSigner");
 		LCSigner.getInstance().init();
 	}
 	
+	/**
+	 * 
+	 * @param port
+	 * @param resourceService
+	 * @throws Exception
+	 */
 	public LCServer(int port, boolean resourceService) throws Exception {
 		this(port, resourceService, null);
 	}
 	
 	private void initHandlers(boolean resourceService, TKHandleListener handleListener) {
 		// TKHandler
+		Log.debug("Initialize LCS TKHandler");
 		TKHandler tkHandler = new TKHandler(handleListener);
 		
 		// ResourceHandler
 		if (resourceService) {
+			Log.debug("Initialize LCS ResourceHandler");
 			ResourceHandler resourceHandler = new ResourceHandler();
 			resourceHandler.setWelcomeFiles(WELCOME_FILES);
 			resourceHandler.setResourceBase(
@@ -60,8 +75,13 @@ public class LCServer {
 		}
 	}
 	
+	/**
+	 * 
+	 * @throws Exception
+	 */
 	public void start() throws Exception {
 		try {
+			Log.debug("Staring LCS");
 			server.start();
 		}
 		catch (Exception ex) {
@@ -70,12 +90,21 @@ public class LCServer {
 		}
 	}
 	
+	/**
+	 * 
+	 * @throws InterruptedException
+	 */
 	public void join() throws InterruptedException {
+		Log.debug("Joining LCS");
 		server.join();
 	}
 	
+	/**
+	 * 
+	 */
 	public void stop() {
 //		server.stop();
+		Log.debug("Safety Stopping LCS");
 		safetyStop();
 	}
 	

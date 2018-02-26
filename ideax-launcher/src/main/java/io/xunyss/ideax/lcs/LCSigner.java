@@ -5,10 +5,12 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.UnsupportedEncodingException;
 import java.security.KeyPair;
 import java.security.PrivateKey;
 import java.security.Security;
 import java.security.Signature;
+import java.security.SignatureException;
 
 import org.bouncycastle.openssl.PEMKeyPair;
 import org.bouncycastle.openssl.PEMParser;
@@ -16,7 +18,6 @@ import org.bouncycastle.openssl.jcajce.JcaPEMKeyConverter;
 
 import io.xunyss.commons.io.IOUtils;
 import io.xunyss.ideax.codec.SimpleFileDecoder;
-import io.xunyss.ideax.log.Log;
 
 /**
  * 
@@ -43,7 +44,7 @@ public class LCSigner {
 	
 	private boolean initialized = false;
 	
-	private Signature ideaSignature = null;
+	private Signature signature = null;
 	
 	/**
 	 * 
@@ -74,13 +75,14 @@ public class LCSigner {
 			/*
 			 * initialize signer signature
 			 */
-			ideaSignature = Signature.getInstance(SIGN_ALGORITHM, SECURITY_PROVIDER);
-			ideaSignature.initSign(privateKey);
+			signature = Signature.getInstance(SIGN_ALGORITHM, SECURITY_PROVIDER);
+			signature.initSign(privateKey);
 		}
 	}
 	
 	/**
-	 * get ideax.pem file
+	 * Get ideax.pem file.
+	 * 
 	 * @return
 	 * @throws IOException
 	 */
@@ -133,30 +135,26 @@ public class LCSigner {
 	 * 
 	 * @param message
 	 * @return
+	 * @throws UnsupportedEncodingException
+	 * @throws SignatureException
 	 */
-	public synchronized String signMessage(String message) {
-		try {
-			if (ideaSignature == null) {
-				throw new IllegalStateException("LCSigner is not initialized");
-			}
-			
-			StringBuilder signed = new StringBuilder();
-			
-			ideaSignature.update(message.getBytes("utf-8"));
-			byte[] signData = ideaSignature.sign();		// do reset
-			
-			int signLen = signData.length;
-			for (int at = 0; at < signLen; at++) {
-				signed.append(digitChar(signData[at] >> 4 & 0xf));
-				signed.append(digitChar(signData[at] & 0xf));
-			}
-			
-			return signed.toString();
+	public synchronized String signMessage(String message) throws UnsupportedEncodingException, SignatureException {
+		if (signature == null) {
+			throw new IllegalStateException("LCSigner is not initialized");
 		}
-		catch (Exception ex) {
-			Log.error("fail to sign", ex);
-			return "[FAIL TO SIGN]";
+		
+		StringBuilder signed = new StringBuilder();
+		
+		signature.update(message.getBytes("UTF-8"));
+		byte[] signData = signature.sign();		// do reset
+		
+		int signLen = signData.length;
+		for (int at = 0; at < signLen; at++) {
+			signed.append(digitChar(signData[at] >> 4 & 0xf));
+			signed.append(digitChar(signData[at] & 0xf));
 		}
+		
+		return signed.toString();
 	}
 	
 	/**

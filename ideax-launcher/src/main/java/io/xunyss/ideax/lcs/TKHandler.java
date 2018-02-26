@@ -23,6 +23,9 @@ public class TKHandler extends AbstractHandler {
 	private static final String URI_RELEASE_TK =
 			"/r" + "pc" + "/r" + "el" + "ea" + "se" + "Ti" + "ck" + "et" + ".a" + "ct" + "io" + "n";
 	
+	/**
+	 * 
+	 */
 	private TKHandleListener listener;
 	
 	
@@ -122,11 +125,17 @@ public class TKHandler extends AbstractHandler {
 				+ "<tic" + "ketP" + "rope" + "rtie" + "s>li" + "cens" + "ee=" + r09 + "\tlic" + "ense" + "Type" + "=0\t<" + "/tic" + "ketP" + "rope" + "rtie" + "s>"
 				+ "</Ob" + "tain" + "Tick" + "etRe" + "spon" + "se>";
 		
-		LCSigner licenseSigner = LCSigner.getInstance();
-		String signature = licenseSigner.signMessage(responseXml);
+		String signature;
+		try {
+			LCSigner licenseSigner = LCSigner.getInstance();
+			signature = licenseSigner.signMessage(responseXml);
+		}
+		catch (Exception ex) {
+			Log.error("Failed to sign message", ex);
+			signature = "FAIL";
+		}
 		
-		responseOK(response,
-				String.format("<!--" + " %s " + "-->\n%s", signature, responseXml));
+		responseOK(response, String.format("<!--" + " %s " + "-->\n%s", signature, responseXml));
 	}
 	
 	/**
@@ -155,8 +164,7 @@ public class TKHandler extends AbstractHandler {
 				+ "<res" + "pons" + "eCod" + "e>OK" + "</re" + "spon" + "seCo" + "de>"
 				+ "</Re" + "leas" + "eTic" + "ketR" + "espo" + "nse>";
 				
-		responseOK(response,
-				responseXml);
+		responseOK(response, responseXml);
 	}
 	
 	/**

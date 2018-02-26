@@ -10,9 +10,9 @@ import java.util.Date;
 public class Log {
 	
 	/**
-	 * Logging Level
+	 * Logging Level.
 	 */
-	private enum Level {
+	public enum Level {
 		DEBUG, INFO, ERROR
 	}
 	
@@ -22,16 +22,16 @@ public class Log {
 	private static final String LOG_FORMAT =
 			"[%1$5s] %2$tY-%2$tm-%2$td %2$tH:%2$tM:%2$tS.%2$tL %3$s.%4$s(:%5$d): %6$s";
 	
-	/**
-	 * 
-	 */
-	private static final Level LOG_LEVEL = Level.DEBUG;
-	
-	
 	private static final PrintStream OUT = System.out;
 	private static final PrintStream ERR = System.err;
 	
 	private static final Date datetime = new Date();
+	
+	
+	/**
+	 * 
+	 */
+	private static Level LOG_LEVEL = Level.DEBUG;
 	
 	
 	public static void out(String msg) {
@@ -42,6 +42,10 @@ public class Log {
 		ERR.println(msg);
 	}
 	
+	
+	public static void setLevel(Level level) {
+		LOG_LEVEL = level;
+	}
 	
 	public static void debug(String msg) {
 		log(Level.DEBUG, msg, null);
