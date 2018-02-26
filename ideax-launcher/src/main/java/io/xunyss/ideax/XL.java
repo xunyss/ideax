@@ -78,12 +78,19 @@ public class XL {
 	private boolean handleLocalTunnel = false;
 	private boolean handleLCServer = false;
 	
+	/**
+	 * 
+	 * @param port
+	 * @param serverMode
+	 * @param executable
+	 * @throws Exception
+	 */
 	private void run(final int port, final boolean serverMode, final String executable) throws Exception {
 		// 프로세스 종료시 / Control + C 종료시 수행
 		Runtime.getRuntime().addShutdownHook(new Thread() {
 			@Override
 			public void run() {
-				Log.info("LCS is stopped.");
+				Log.info("LCS is stopped");
 			}
 		});
 		
@@ -95,15 +102,27 @@ public class XL {
 		}
 	}
 	
+	/**
+	 * 
+	 * @param port
+	 * @throws Exception
+	 */
 	private void runServer(int port) throws Exception {
 		lcServer = new LCServer(port, true);
 		lcServer.start();
 		
 		Log.info("LCS address: http://<hostname>:" + port);
-		Log.info("LCS is ready..");
+		Log.info("LCS is ready");
+		
 		lcServer.join();
 	}
 	
+	/**
+	 * 
+	 * @param port
+	 * @param executable
+	 * @throws Exception
+	 */
 	private void runExec(int port, String executable) throws Exception {
 		MonitoringListener ltListener = new MonitoringListener() {
 			@Override
@@ -147,7 +166,7 @@ public class XL {
 		localTunnel.open("xunysslcs");
 		localTunnel.start();
 		
-		Log.info("Tunnel started.");
+		Log.info("LCS Tunnel is started");
 		
 		//------------------------------------------------------------------------------------------
 		// 2. jetty
@@ -155,18 +174,22 @@ public class XL {
 		lcServer.start();
 		
 		Log.info("LCS address: " + localTunnel.getRemoteDetails().getUrl());
-		Log.info("LCS is ready..");
+		Log.info("LCS is ready");
 		
 		//------------------------------------------------------------------------------------------
 		// 3. executable
 		if (StringUtils.isNotEmpty(executable)) {
-			Log.info("Start application..");
+			Log.info("Starting application");
 			new ProcessExecutor().execute(executable);
 		}
 	}
 	
+	/**
+	 * 
+	 */
 	private void stopForExec() {
 		if (handleLocalTunnel && handleLCServer) {
+			Log.info("Stopping LCS");
 			localTunnel.stop();
 			lcServer.stop();
 		}

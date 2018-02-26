@@ -104,7 +104,7 @@ public class LCSigner {
 				if (pemResourceInput == null) {
 					pemResourceInput = Thread.currentThread().getContextClassLoader().getResourceAsStream(PEM_RESOURCE_PATH);
 				}
-				if (pemInput == null) {
+				if (pemResourceInput == null) {
 					pemResourceInput = getClass().getClassLoader().getResourceAsStream(PEM_RESOURCE_PATH);
 				}
 				
@@ -114,7 +114,7 @@ public class LCSigner {
 			}
 			
 			if (pemInput == null) {
-				throw new IOException("Fail to initialize: PEM resource not found: " + PEM_RESOURCE_PATH);
+				throw new IOException("Failed to initialize: PEM resource not found: " + PEM_RESOURCE_PATH);
 			}
 			
 			pemParser = new PEMParser(new InputStreamReader(pemInput));

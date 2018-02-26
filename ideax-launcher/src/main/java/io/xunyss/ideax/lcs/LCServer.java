@@ -17,6 +17,9 @@ public class LCServer {
 	private static final String LCS_WEB_RESOURCES = "io/xunyss/ideax/lcs/webcontents";
 	private static final String[] WELCOME_FILES = {"index.html"};
 	
+	/**
+	 * 
+	 */
 	private final Server server;
 	
 	
