@@ -1,10 +1,13 @@
 package io.xunyss.ideax;
 
+import io.xunyss.commons.exec.ProcessExecutor;
+import io.xunyss.commons.lang.StringUtils;
 import io.xunyss.ideax.lcs.LCServer;
 import io.xunyss.ideax.lcs.TKHandleListener;
 import io.xunyss.ideax.log.Log;
 import io.xunyss.localtunnel.LocalTunnel;
 import io.xunyss.localtunnel.LocalTunnelClient;
+import io.xunyss.localtunnel.monitor.MonitoringListener;
 
 /**
  * 
@@ -16,6 +19,7 @@ public class XL {
 	 * 
 	 */
 	private static final int DEFAULT_PORT = 9797;
+	
 	
 	/**
 	 * 
@@ -69,69 +73,102 @@ public class XL {
 	
 	//==============================================================================================
 	
-	private void run(int port, boolean serverMode, String executable) throws Exception {
-		
-		final LCServer lcServer;
+	private LocalTunnel localTunnel;
+	private LCServer lcServer;
+	private boolean handleLocalTunnel = false;
+	private boolean handleLCServer = false;
+	
+	private void run(final int port, final boolean serverMode, final String executable) throws Exception {
+		// 프로세스 종료시 / Control + C 종료시 수행
+		Runtime.getRuntime().addShutdownHook(new Thread() {
+			@Override
+			public void run() {
+				Log.info("LCS is stopped.");
+			}
+		});
 		
 		if (serverMode) {
-			Log.info("Start LCS..");
-			
-			lcServer = new LCServer(port, true);
-			lcServer.start();
-			
-			Log.info("LCS address: http://<hostname>:" + port);
-			Log.info("LCS is ready..");
-			lcServer.join();
+			runServer(port);
 		}
 		else {
-			// 1. jetty
-			lcServer = new LCServer(port, false, new TKHandleListener() {
-				@Override
-				public void handled() {
-//					try {
-//						getLCServer().stop();
-//					}
-//					catch (Exception ex) {
-//						ex.printStackTrace();
-//					}
-				}
-			});
-			lcServer.start();
-			
-			Log.info("LCS address: http://<hostname>:" + port);
-			Log.info("LCS is ready..");
-			
-			// 2. localtunnel
-			LocalTunnel localTunnel = LocalTunnelClient.getDefault().create(9797);
-			localTunnel.setMonitoringListener(null);
-			localTunnel.setMaxActive(2);
-			
-			localTunnel.open("xunysslcs");
-			
-			String url = localTunnel.getRemoteDetails().getUrl();
-			
-			localTunnel.start();
-			
-			Log.info("URL: " + url);
-			
-//			// 3. executable
-//			if (StringUtils.isNotEmpty(executable)) {
-//				Log.info("Start application..");
-//				AppLauncher.exec(executable);
-//				new ProcessExecutor().execute(executable);
-//				// process's streams 을 명시적으로 close 하지 않는 것이 문제가 되는지 확인!
-//			}
+			runExec(port, executable);
 		}
+	}
+	
+	private void runServer(int port) throws Exception {
+		lcServer = new LCServer(port, true);
+		lcServer.start();
 		
+		Log.info("LCS address: http://<hostname>:" + port);
+		Log.info("LCS is ready..");
+		lcServer.join();
+	}
+	
+	private void runExec(int port, String executable) throws Exception {
+		MonitoringListener ltListener = new MonitoringListener() {
+			@Override
+			public void onExecuteProxyTask(long threadId) {
+			}
+			@Override
+			public void onConnectRemote(int activeTaskCount) {
+			}
+			@Override
+			public void onDisconnectRemote(int activeTaskCount) {
+			}
+			@Override
+			public void onErrorRemote(int activeTaskCount) {
+			}
+			@Override
+			public void onConnectLocal(int activeTaskCount) {
+			}
+			@Override
+			public void onDisconnectLocal(int activeTaskCount) {
+				handleLocalTunnel = true;
+				stopForExec();
+			}
+			@Override
+			public void onErrorLocal(int activeTaskCount) {
+			}
+		};
 		
+		TKHandleListener lcListener = new TKHandleListener() {
+			@Override
+			public void handled() {
+				handleLCServer = true;
+				stopForExec();
+			}
+		};
 		
-
+		//------------------------------------------------------------------------------------------
+		// 1. localTunnel
+		localTunnel = LocalTunnelClient.getDefault().create(port);
+		localTunnel.setMonitoringListener(ltListener);
+		localTunnel.setMaxActive(2);
+		localTunnel.open("xunysslcs");
+		localTunnel.start();
 		
-		Log.info("LCS is stopped");
+		Log.info("Tunnel started.");
 		
+		//------------------------------------------------------------------------------------------
+		// 2. jetty
+		lcServer = new LCServer(port, false, lcListener);
+		lcServer.start();
 		
+		Log.info("LCS address: " + localTunnel.getRemoteDetails().getUrl());
+		Log.info("LCS is ready..");
 		
-		
-		// Control + C 종료시 리소스 반환/정상 종료 처리
+		//------------------------------------------------------------------------------------------
+		// 3. executable
+		if (StringUtils.isNotEmpty(executable)) {
+			Log.info("Start application..");
+			new ProcessExecutor().execute(executable);
+		}
+	}
+	
+	private void stopForExec() {
+		if (handleLocalTunnel && handleLCServer) {
+			localTunnel.stop();
+			lcServer.stop();
+		}
 	}
 }

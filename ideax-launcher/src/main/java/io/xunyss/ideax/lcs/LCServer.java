@@ -71,7 +71,7 @@ public class LCServer {
 		server.join();
 	}
 	
-	public void stop() throws Exception {
+	public void stop() {
 //		server.stop();
 		safetyStop();
 	}

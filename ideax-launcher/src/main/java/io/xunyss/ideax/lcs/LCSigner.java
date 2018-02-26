@@ -120,8 +120,8 @@ public class LCSigner {
 			pemParser = new PEMParser(new InputStreamReader(pemInput));
 			return pemParser.readObject();
 		}
-		catch (IOException ioe) {
-			throw ioe;
+		catch (IOException ex) {
+			throw ex;
 		}
 		finally {
 			IOUtils.closeQuietly(pemInput);
@@ -153,8 +153,8 @@ public class LCSigner {
 			
 			return signed.toString();
 		}
-		catch (Exception e) {
-			Log.error("fail to sign", e);
+		catch (Exception ex) {
+			Log.error("fail to sign", ex);
 			return "[FAIL TO SIGN]";
 		}
 	}
