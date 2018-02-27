@@ -19,7 +19,7 @@ public class AppLauncher {
 	private static final String ENV_PROGRAMFILES = "ProgramFiles";
 	private static final String ENV_PROGRAMFILES_X86 = "ProgramFiles(x86)";
 	
-	public static void exec(String appPath) throws IOException {
+	public static void exec(String appPath) {
 		String command = appPath != null && appPath.length() > 0 ? appPath : findApp();
 		
 		if (command != null && command.length() > 0) {
