@@ -6,6 +6,11 @@
 
 	<modelVersion>4.0.0</modelVersion>
 	
+	<parent>
+		<groupId>io.xunyss.pom</groupId>
+		<artifactId>pom-execjar</artifactId>
+		<version>1.0.0</version>
+	</parent>
 	<groupId>io.xunyss.ideax</groupId>
 	<artifactId>ideax</artifactId>
 	<version>1.2.1-RELEASE</version>
