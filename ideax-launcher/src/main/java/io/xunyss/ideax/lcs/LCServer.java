@@ -53,12 +53,12 @@ public class LCServer {
 	
 	private void initHandlers(boolean resourceService, TKHandleListener handleListener) {
 		// TKHandler
-		Log.debug("Initialize LCS TKHandler");
+		Log.debug("Initialize LCServer TKHandler");
 		TKHandler tkHandler = new TKHandler(handleListener);
 		
 		// ResourceHandler
 		if (resourceService) {
-			Log.debug("Initialize LCS ResourceHandler");
+			Log.debug("Initialize LCServer ResourceHandler");
 			ResourceHandler resourceHandler = new ResourceHandler();
 			resourceHandler.setWelcomeFiles(WELCOME_FILES);
 			resourceHandler.setResourceBase(
@@ -81,7 +81,7 @@ public class LCServer {
 	 */
 	public void start() throws Exception {
 		try {
-			Log.debug("Staring LCS");
+			Log.debug("Staring LCServer");
 			server.start();
 		}
 		catch (Exception ex) {
@@ -95,7 +95,7 @@ public class LCServer {
 	 * @throws InterruptedException
 	 */
 	public void join() throws InterruptedException {
-		Log.debug("Joining LCS");
+		Log.debug("Joining LCServer");
 		server.join();
 	}
 	
@@ -104,7 +104,7 @@ public class LCServer {
 	 */
 	public void stop() {
 //		server.stop();
-		Log.debug("Safety Stopping LCS");
+		Log.debug("Safety Stopping LCServer");
 		safetyStop();
 	}
 	

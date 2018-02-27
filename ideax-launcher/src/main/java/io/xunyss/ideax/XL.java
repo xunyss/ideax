@@ -1,5 +1,6 @@
 package io.xunyss.ideax;
 
+import java.io.IOException;
 import java.util.Properties;
 
 import io.xunyss.commons.exec.ExecuteException;
@@ -72,7 +73,7 @@ public class XL {
 	
 	private static void usage() {
 		Log.out("Invalid arguments");
-		Log.out("Usage: IX [-port port] {-server | -exec <executable>}");
+		Log.out("Usage: XL [-port port] {-server | -exec <executable>}");
 	}
 	
 	
@@ -82,6 +83,7 @@ public class XL {
 	private LCServer lcServer;
 	private boolean handleLocalTunnel = false;
 	private boolean handleLCServer = false;
+	
 	
 	/**
 	 * 
@@ -103,7 +105,7 @@ public class XL {
 		Runtime.getRuntime().addShutdownHook(new Thread() {
 			@Override
 			public void run() {
-				Log.info("LCS is stopped");
+				Log.info("XL is stopped");
 			}
 		});
 		
@@ -124,8 +126,8 @@ public class XL {
 		lcServer = new LCServer(port, true);
 		lcServer.start();
 		
-		Log.info("LCS Address: http://<hostname>:" + port);
-		Log.info("LCS is ready");
+		Log.info("LCServer Address: http://<hostname>:" + port);
+		Log.info("LCServer is ready");
 		
 //		lcServer.join();
 	}
@@ -174,25 +176,47 @@ public class XL {
 		
 		//------------------------------------------------------------------------------------------
 		// 1. localTunnel
+		//------------------------------------------------------------------------------------------
 		localTunnel = LocalTunnelClient.getDefault().create(port);
 		localTunnel.setMonitoringListener(ltListener);
 		localTunnel.setMaxActive(TUNNEL_MAX_ACTIVE);
-		localTunnel.open(TUNNEL_SUB_DOMAIN);
-		localTunnel.start();
 		
-		Log.info("LCS Tunnel Sub-Domain: " + localTunnel.getRemoteDetails().getSubDomain());
-		Log.info("LCS Tunnel is started");
+		Log.info("Connecting Local-Tunnel");
+		
+		try {
+			localTunnel.open(TUNNEL_SUB_DOMAIN);
+			localTunnel.start();
+		}
+		catch (IOException ex) {
+			Log.error("Failed to connect Local-Tunnel", ex);
+		}
+		
+		Log.info("Local-Tunnel Sub-Domain: " + localTunnel.getRemoteDetails().getSubDomain());
+		Log.info("Local-Tunnel is started");
 		
 		//------------------------------------------------------------------------------------------
-		// 2. jetty
-		lcServer = new LCServer(port, false, lcListener);
-		lcServer.start();
-		
-		Log.info("LCS Address: " + localTunnel.getRemoteDetails().getUrl());
-		Log.info("LCS is ready");
+		// 2. lcServer
+		//------------------------------------------------------------------------------------------
+		if (localTunnel.isRunning()) {
+			lcServer = new LCServer(port, false, lcListener);
+			try {
+				lcServer.start();
+				
+				Log.info("LCServer Address: " + localTunnel.getRemoteDetails().getUrl());
+				Log.info("LCServer is ready");
+			}
+			catch (Exception ex) {
+				Log.error("Failed to start LCServer", ex);
+				
+				// if 'lcServer' fail --> stop 'localTunnel'
+				Log.info("Stopping Local-Tunnel");
+				localTunnel.stop();
+			}
+		}
 		
 		//------------------------------------------------------------------------------------------
 		// 3. executable
+		//------------------------------------------------------------------------------------------
 		if (StringUtils.isNotEmpty(executable)) {
 			Log.info("Starting Application");
 			Log.info(executable);
@@ -201,7 +225,7 @@ public class XL {
 				new ProcessExecutor().execute(executable);
 			}
 			catch (ExecuteException ex) {
-				Log.error("Failed to execute Application");
+				Log.error("Failed to execute Application", ex);
 			}
 		}
 	}
@@ -211,8 +235,8 @@ public class XL {
 	 */
 	private void stopForExec() {
 		if (handleLocalTunnel && handleLCServer) {
-			Log.info("Stopping LCS Tunnel");
-			Log.info("Stopping LCS");
+			Log.info("Stopping Local-Tunnel");
+			Log.info("Stopping LCServer");
 			
 			localTunnel.stop();
 			lcServer.stop();

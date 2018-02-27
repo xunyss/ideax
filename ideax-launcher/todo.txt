@@ -15,6 +15,12 @@ Connection: keep-alive
 <!-- a927753186822f84ffe0e59e9d12edb8b6d172bfb20f335cad172a83243078765267822625f19e188516a685e089f05ddb5bf0e2f0dc45ab83be16fb11068e06 -->
 <ReleaseTicketResponse><message></message><responseCode>OK</responseCode><salt>1518007517127</salt></ReleaseTicketResponse>
 
+<!-- a927753186822f84ffe0e59e9d12edb8b6d172bfb20f335cad172a83243078765267822625f19e188516a685e089f05ddb5bf0e2f0dc45ab83be16fb11068e06 -->
+<ReleaseTicketResponse><message></message><responseCode>OK</responseCode><salt>1518007517127</salt></ReleaseTicketResponse>
+
+<!-- a927753186822f84ffe0e59e9d12edb8b6d172bfb20f335cad172a83243078765267822625f19e188516a685e089f05ddb5bf0e2f0dc45ab83be16fb11068e06 -->
+<ReleaseTicketResponse><message></message><responseCode>OK</responseCode><salt>1518007517127</salt></ReleaseTicketResponse>
+
 <ReleaseTicketResponse><responseCode>OK</responseCode></ReleaseTicketResponse>
 
 
@@ -39,7 +45,11 @@ Connection: keep-alive
 <!-- 9291a781d9927a8b7b66951051845eb1d027a0f83ce1d7687198de7c788eea49b72fd17d16ed558e60b8e51d6cd5a1987c64ac8454b08c8446a7d856fd176196 -->
 <ObtainTicketResponse><message></message><prolongationPeriod>607875500</prolongationPeriod><responseCode>OK</responseCode><salt>1518007517471</salt><ticketId>1</ticketId><ticketProperties>licensee=xunyss licenseType=0 </ticketProperties></ObtainTicketResponse>
 
+<!-- 9291a781d9927a8b7b66951051845eb1d027a0f83ce1d7687198de7c788eea49b72fd17d16ed558e60b8e51d6cd5a1987c64ac8454b08c8446a7d856fd176196 -->
+<ObtainTicketResponse><message></message><prolongationPeriod>607875500</prolongationPeriod><responseCode>OK</responseCode><salt>1518007517471</salt><ticketId>1</ticketId><ticketProperties>licensee=xunyss	licenseType=0	</ticketProperties></ObtainTicketResponse>
 
+<!-- 9291a781d9927a8b7b66951051845eb1d027a0f83ce1d7687198de7c788eea49b72fd17d16ed558e60b8e51d6cd5a1987c64ac8454b08c8446a7d856fd176196 -->
+<ObtainTicketResponse><message></message><prolongationPeriod>607875500</prolongationPeriod><responseCode>OK</responseCode><salt>1518007517471</salt><ticketId>1</ticketId><ticketProperties>licensee=xunyss	licenseType=0	</ticketProperties></ObtainTicketResponse>
 
 
 
@@ -47,12 +57,10 @@ http://lcs.xunyss.io:81
 http://xunyss-pc:9797
 http://jlicense.com
 
-
 commons.io.ReaderInputStream 구현
 
 ngrok > io.xunyss.ngrok 만들기
   > process executor 로 process kill 할 수 있는거 만들기 / process outstream 처리해 가면서 로직 넣을 수 있도록 확장포인트 만들기
-  > openssl commons 에서 분리
   > ngrok 실행하고 idea.key 수정하고 실행하는 ideax2 만들기
 
 ideax
@@ -82,6 +90,7 @@ https://www.npmjs.com/package/ilsap
 https://ngrok.com/
 https://blog.outsider.ne.kr/1159
 
+http://jetbrains.license.laucyun.com/
 http://xidea.online/
 https://github.com/zhangjiemin000/ilsap
   > 왜필요한거지?

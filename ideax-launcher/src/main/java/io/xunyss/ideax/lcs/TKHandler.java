@@ -125,17 +125,7 @@ public class TKHandler extends AbstractHandler {
 				+ "<tic" + "ketP" + "rope" + "rtie" + "s>li" + "cens" + "ee=" + r09 + "\tlic" + "ense" + "Type" + "=0\t<" + "/tic" + "ketP" + "rope" + "rtie" + "s>"
 				+ "</Ob" + "tain" + "Tick" + "etRe" + "spon" + "se>";
 		
-		String signature;
-		try {
-			LCSigner licenseSigner = LCSigner.getInstance();
-			signature = licenseSigner.signMessage(responseXml);
-		}
-		catch (Exception ex) {
-			Log.error("Failed to sign message", ex);
-			signature = "FAIL";
-		}
-		
-		responseOK(response, String.format("<!--" + " %s " + "-->\n%s", signature, responseXml));
+		doResponse(response, sign(responseXml));
 	}
 	
 	/**
@@ -153,31 +143,51 @@ public class TKHandler extends AbstractHandler {
 //		String r3 = request.getParameter("mach" + "ineI" + "d");
 //		String r4 = request.getParameter("prod" + "uctC" + "ode");
 //		String r5 = request.getParameter("prod" + "uctF" + "amil" + "yId");
-//		String r6 = request.getParameter("salt");
+		String r6 = request.getParameter("salt");
 //		String r7 = request.getParameter("secu" + "re");
 //		String r8 = request.getParameter("tick" + "etId");
 //		String r9 = request.getParameter("user" + "Name");
 		
-		// I don't know.. T.T
 		final String responseXml = ""
 				+ "<Rel" + "ease" + "Tick" + "etRe" + "spon" + "se>"
+				+ "<mes" + "sage" + "></m" + "essa" + "ge>"
 				+ "<res" + "pons" + "eCod" + "e>OK" + "</re" + "spon" + "seCo" + "de>"
+				+ "<sal" + "t>" + r6 +  "</sa" + "lt>"
 				+ "</Re" + "leas" + "eTic" + "ketR" + "espo" + "nse>";
-				
-		responseOK(response, responseXml);
+		
+		doResponse(response, sign(responseXml));
+	}
+	
+	/**
+	 * 
+	 * @param message
+	 * @return
+	 */
+	private String sign(String message) {
+		String signature;
+		try {
+			LCSigner licenseSigner = LCSigner.getInstance();
+			signature = licenseSigner.signMessage(message);
+		}
+		catch (Exception ex) {
+			Log.error("Failed to sign message", ex);
+			signature = "FAIL";
+		}
+		
+		return String.format("<!--" + " %s " + "-->\n%s", signature, message);
 	}
 	
 	/**
 	 * 
 	 * @param response
-	 * @param body
+	 * @param contents
 	 * @throws IOException
 	 * @throws ServletException
 	 */
-	private void responseOK(HttpServletResponse response, String body) throws IOException, ServletException {
+	private void doResponse(HttpServletResponse response, String contents) throws IOException, ServletException {
 		response.setStatus(HttpServletResponse.SC_OK);
 		response.setContentType("text/xml; charset=utf-8");
-		response.getWriter().write(body);
+		response.getWriter().write(contents);
 		response.getWriter().flush();
 	}
 }
