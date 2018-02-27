@@ -13,6 +13,7 @@ public class AppLauncherTest {
 
 	@Test
 	public void findApp() {
+		@SuppressWarnings("deprecation")
 		String appPath = AppLauncher.findApp();
 		System.out.println(appPath);
 		System.out.println(System.getProperty("os.arch"));
