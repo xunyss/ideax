@@ -24,7 +24,7 @@ public class XL {
 	 */
 	private static final int DEFAULT_PORT = 9797;
 	private static final int TUNNEL_MAX_ACTIVE = 2;
-	private static final String TUNNEL_SUB_DOMAIN = "xunysslcs";
+	private static final String TUNNEL_SUB_DOMAIN = "xl9797jlcs";
 	
 	
 	/**
@@ -53,6 +53,10 @@ public class XL {
 					serverMode = true;
 					break;
 				}
+				else if ("-once".equals(args[idx])) {
+					executable = StringUtils.EMPTY;
+					break;
+				}
 				else if ("-exec".equals(args[idx])) {
 					executable = args[++idx];
 					break;
@@ -73,7 +77,7 @@ public class XL {
 	
 	private static void usage() {
 		Log.out("Invalid arguments");
-		Log.out("Usage: XL [-port port] {-server | -exec <executable>}");
+		Log.out("Usage: XL [-port port] {-server | -once | -exec <executable>}");
 	}
 	
 	
@@ -113,7 +117,7 @@ public class XL {
 			runServer(port);
 		}
 		else {
-			runExec(port, executable);
+			runLocal(port, executable);
 		}
 	}
 	
@@ -138,7 +142,7 @@ public class XL {
 	 * @param executable
 	 * @throws Exception
 	 */
-	private void runExec(int port, String executable) throws Exception {
+	private void runLocal(int port, String executable) throws Exception {
 		
 		MonitoringListener ltListener = new MonitoringListener() {
 			@Override
@@ -159,7 +163,7 @@ public class XL {
 			@Override
 			public void onDisconnectLocal(int activeTaskCount) {
 				handleLocalTunnel = true;
-				stopForExec();
+				stopForLocal();
 			}
 			@Override
 			public void onErrorLocal(int activeTaskCount) {
@@ -170,7 +174,7 @@ public class XL {
 			@Override
 			public void handled() {
 				handleLCServer = true;
-				stopForExec();
+				stopForLocal();
 			}
 		};
 		
@@ -233,7 +237,7 @@ public class XL {
 	/**
 	 * 
 	 */
-	private void stopForExec() {
+	private void stopForLocal() {
 		if (handleLocalTunnel && handleLCServer) {
 			Log.info("Stopping Local-Tunnel");
 			Log.info("Stopping LCServer");
