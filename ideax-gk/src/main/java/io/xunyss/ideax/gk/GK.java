@@ -155,7 +155,7 @@ public class GK {
 		Log.out("Unzip 'lcs-installer.zip'");
 		Log.out();
 		
-		ZipUtils.unzip(lcsZip, workingDir);
+		ZipUtils.unzip(new File(lcsZip), workingDir);
 	}
 	
 	/**
@@ -214,7 +214,7 @@ public class GK {
 		}
 		
 		generatedkeyFile = new File(workingDir, "ideax.temp.pem");
-		FileUtils.copy(generatedKey, generatedkeyFile);
+		FileUtils.writeString(generatedkeyFile, generatedKey);
 		
 		Log.out("Generated private key:\n" + generatedKey);
 	}
@@ -238,7 +238,7 @@ public class GK {
 	private void createPem() throws IOException {
 		int startPos = pemString.indexOf("-----BEGIN RSA PRIVATE KEY-----");
 		pemString = pemString.substring(startPos);
-		FileUtils.copy(pemString, new File("ideax.pem"));
+		FileUtils.writeString(new File("ideax.pem"), pemString);
 		
 		Log.out("Key file 'ideax.pem' is created");
 		Log.out();
