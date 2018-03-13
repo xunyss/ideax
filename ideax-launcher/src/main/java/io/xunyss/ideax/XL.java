@@ -190,6 +190,7 @@ public class XL {
 		try {
 			localTunnel.open(TUNNEL_SUB_DOMAIN);
 			localTunnel.start();
+			// FIXME tunnelThread 에서 에러 발생시 lcServer 도 중지 하여야 함
 		}
 		catch (IOException ex) {
 			Log.error("Failed to connect Local-Tunnel", ex);
