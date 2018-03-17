@@ -170,6 +170,15 @@ public class XL {
 			}
 		};
 		
+		Thread.UncaughtExceptionHandler ltErrorHandler = new Thread.UncaughtExceptionHandler() {
+			@Override
+			public void uncaughtException(Thread t, Throwable e) {
+				Log.error("Occurred error on tunneling", e);
+				handleLocalTunnel = handleLCServer = true;
+				stopForLocal();
+			}
+		};
+		
 		TKHandleListener lcListener = new TKHandleListener() {
 			@Override
 			public void handled() {
@@ -183,6 +192,7 @@ public class XL {
 		//------------------------------------------------------------------------------------------
 		localTunnel = LocalTunnelClient.getDefault().create(port);
 		localTunnel.setMonitoringListener(ltListener);
+		localTunnel.setTunnelErrorHandler(ltErrorHandler);
 		localTunnel.setMaxActive(TUNNEL_MAX_ACTIVE);
 		
 		Log.info("Connecting Local-Tunnel");
@@ -190,7 +200,6 @@ public class XL {
 		try {
 			localTunnel.open(TUNNEL_SUB_DOMAIN);
 			localTunnel.start();
-			// FIXME tunnelThread 에서 에러 발생시 lcServer 도 중지 하여야 함
 		}
 		catch (IOException ex) {
 			Log.error("Failed to connect Local-Tunnel", ex);
