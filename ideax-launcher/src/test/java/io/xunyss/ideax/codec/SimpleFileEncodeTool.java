@@ -40,7 +40,11 @@ public class SimpleFileEncodeTool {
 	
 	@Test
 	public void dec() throws IOException {
-		InputStream inputStream = new SimpleFileDecoder(ResourceUtils.getResourceAsStream("some_resource"));
+		// @see LCSigner.java
+		final String PEM_RESOURCE_PATH = "ke" + "y/" + "id" + "ea" + "x." + "pe" + "m";
+		
+		InputStream inputStream = new SimpleFileDecoder(
+				ResourceUtils.getResourceAsStream(PEM_RESOURCE_PATH, ClassLoader.getSystemClassLoader()));
 		String contents = IOUtils.toString(inputStream);
 		System.out.println(contents);
 	}

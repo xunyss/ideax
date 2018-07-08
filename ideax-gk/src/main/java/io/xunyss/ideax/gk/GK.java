@@ -171,14 +171,19 @@ public class GK {
 			// version 1
 //			clazz = jarClassLoader.loadClass(Consts.fpkkClsV1);
 			// version 2
-			clazz = jarClassLoader.loadClass(Consts.fpkkClsV2);
+//			clazz = jarClassLoader.loadClass(Consts.fpkkClsV2);
+			// version 2
+			clazz = jarClassLoader.loadClass(Consts.fpkkClsV3);
 		}
 		
 		// version 1
 //		Field fieldModulus = clazz.getDeclaredField("MODULUS");
 //		Field fielPprivateExponent = clazz.getDeclaredField("PRIVATE_EXPONENT");
 		// version 2
-		Field fieldModulus = clazz.getDeclaredField("d");
+//		Field fieldModulus = clazz.getDeclaredField("d");
+//		Field fielPprivateExponent = clazz.getDeclaredField("a");
+		// version 3
+		Field fieldModulus = clazz.getDeclaredField("c");
 		Field fielPprivateExponent = clazz.getDeclaredField("a");
 		
 		fieldModulus.setAccessible(true);
