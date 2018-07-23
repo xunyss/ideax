@@ -38,6 +38,7 @@ public class XL {
 		// java -jar ideax.jar [-port port-number] -server
 		// java -jar ideax.jar [-port port-number] -exec <executable>
 		//------------------------------------------------------------------------------------------
+		// TODO: implements server mode using local-tunnel
 		
 		int port = DEFAULT_PORT;
 		boolean serverMode = false;
