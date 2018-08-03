@@ -40,6 +40,11 @@
 			<artifactId>bcprov-jdk15on</artifactId>
 			<version>${sec.bc.version}</version>
 		</dependency>
+		<dependency>
+			<groupId>commons-codec</groupId>
+			<artifactId>commons-codec</artifactId>
+			<version>1.11</version>
+		</dependency>
 	</dependencies>
 
 	<build>
