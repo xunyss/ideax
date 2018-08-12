@@ -24,6 +24,7 @@ import io.xunyss.openssl.OpenSSL;
 
 /**
  * GK.
+ * invalid since version 2018.2.1
  *
  * @author XUNYSS
  */
@@ -172,7 +173,7 @@ public class GK {
 //			clazz = jarClassLoader.loadClass(Consts.fpkkClsV1);
 			// version 2
 //			clazz = jarClassLoader.loadClass(Consts.fpkkClsV2);
-			// version 2
+			// version 3
 			clazz = jarClassLoader.loadClass(Consts.fpkkClsV3);
 		}
 		
