@@ -42,7 +42,7 @@ public class SimpleFileDecoder extends InputStream {
 				// TODO: 적절한 Exception 객체 사용할 것
 				throw new UnsupportedEncodingException("Invalid encoded stream");
 			}
-			loopc = 0;
+//			loopc = 0;
 			break;
 		}
 		be = inputStream.read();
