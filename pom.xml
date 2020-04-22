@@ -7,9 +7,9 @@
 	<modelVersion>4.0.0</modelVersion>
 	
 	<parent>
-		<groupId>io.xunyss.pom</groupId>
-		<artifactId>pom-execjar</artifactId>
-		<version>1.0.0</version>
+		<groupId>io.xunyss.poms</groupId>
+		<artifactId>poms-execjar</artifactId>
+		<version>1</version>
 	</parent>
 	<groupId>io.xunyss.ideax</groupId>
 	<artifactId>ideax</artifactId>
@@ -27,17 +27,6 @@
 	<properties>
 		<sec.bc.version>1.59</sec.bc.version>
 	</properties>
-	
-	<repositories>
-		<repository>
-			<id>github-mvn-repo</id>
-			<url>https://raw.github.com/xunyss/pom/mvn-repo/</url>
-			<snapshots>
-				<enabled>true</enabled>
-				<updatePolicy>always</updatePolicy>
-			</snapshots>
-		</repository>
-	</repositories>
 	
 	<dependencies>
 		<dependency>
