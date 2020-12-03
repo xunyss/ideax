@@ -19,7 +19,7 @@
 	
 	<properties>
 		<!-- 9.3 이상부터 jre8 필요 -->
-		<jetty.version>9.4.17.v20190418</jetty.version>
+		<jetty.version>9.4.35.v20201120</jetty.version>
 		<!-- mainClass -->
 		<mainClass>io.xunyss.ideax.XL</mainClass>
 	</properties>
