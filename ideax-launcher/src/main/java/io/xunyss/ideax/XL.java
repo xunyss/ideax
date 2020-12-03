@@ -103,6 +103,7 @@ public class XL {
 		jettyLogProps.setProperty("log.LEVEL", "OFF");
 		
 		// 2020.12.03 jetty version up 되면서 setProperties 메소드 사라짐.
+		// TODO: console output 테스트 필요
 	//	org.eclipse.jetty.util.log.StdErrLog.setProperties(jettyLogProps);
 		
 		// set Log-Level
